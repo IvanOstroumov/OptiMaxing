@@ -58,18 +58,13 @@
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
 
                         <TextBox Grid.Column="0"
                                  Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged, Delay=150}"
                                  ToolTip="Поиск по названию, описанию и категории" />
 
-                        <ComboBox Grid.Column="1" Width="200" Margin="10,0,0,0"
-                                  ItemsSource="{Binding Categories}"
-                                  SelectedItem="{Binding SelectedCategory}" />
-
-                        <StackPanel Grid.Column="2" Orientation="Horizontal" Margin="10,0,0,0">
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="10,0,0,0">
                             <Button Content="Пресет: безопасные" Command="{Binding SelectSafePresetCommand}" />
                             <Button Content="Снять выделение" Command="{Binding ClearSelectionCommand}" Margin="8,0,0,0" />
                             <Button Content="Обновить состояние" Command="{Binding ScanCommand}" Margin="8,0,0,0" />
@@ -79,12 +74,62 @@
                     <!-- Content -->
                     <Grid Grid.Row="1">
                         <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="200" />
+                            <ColumnDefinition Width="8" />
                             <ColumnDefinition Width="2*" />
                             <ColumnDefinition Width="8" />
                             <ColumnDefinition Width="1*" />
                         </Grid.ColumnDefinitions>
 
+                        <!-- Category tree (flat — the catalog has no sub-categories, so a single-level
+                             list with counts gives the same navigation value as a real tree) -->
                         <Border Grid.Column="0" Background="{StaticResource PanelBrush}" CornerRadius="8"
+                                BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" Padding="6">
+                            <ListBox ItemsSource="{Binding CategoryEntries}" Background="Transparent" BorderThickness="0"
+                                     SelectedValuePath="Name" SelectedValue="{Binding SelectedCategory}"
+                                     ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                                <ListBox.ItemContainerStyle>
+                                    <Style TargetType="ListBoxItem">
+                                        <Setter Property="Padding" Value="8,6" />
+                                        <Setter Property="Margin" Value="0,1" />
+                                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="ListBoxItem">
+                                                    <Border x:Name="Bg" CornerRadius="6" Padding="{TemplateBinding Padding}"
+                                                            Background="Transparent">
+                                                        <ContentPresenter />
+                                                    </Border>
+                                                    <ControlTemplate.Triggers>
+                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                            <Setter TargetName="Bg" Property="Background" Value="#1a2433" />
+                                                        </Trigger>
+                                                        <Trigger Property="IsSelected" Value="True">
+                                                            <Setter TargetName="Bg" Property="Background" Value="#1e3a5f" />
+                                                        </Trigger>
+                                                    </ControlTemplate.Triggers>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </ListBox.ItemContainerStyle>
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <DockPanel>
+                                            <Border DockPanel.Dock="Right" CornerRadius="8" Padding="6,1"
+                                                    Background="#0f1622" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding Count}" FontSize="11"
+                                                           Style="{StaticResource MutedText}" />
+                                            </Border>
+                                            <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis"
+                                                       Margin="0,0,8,0" VerticalAlignment="Center" />
+                                        </DockPanel>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </Border>
+
+                        <Border Grid.Column="2" Background="{StaticResource PanelBrush}" CornerRadius="8"
                                 BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
                             <ListBox ItemsSource="{Binding Visible}" Background="Transparent" BorderThickness="0"
                                      ScrollViewer.HorizontalScrollBarVisibility="Disabled"
@@ -147,7 +192,7 @@
                             </ListBox>
                         </Border>
 
-                        <Border Grid.Column="2" Background="{StaticResource PanelBrush}" CornerRadius="8"
+                        <Border Grid.Column="4" Background="{StaticResource PanelBrush}" CornerRadius="8"
                                 BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" Padding="12">
                             <DockPanel>
                                 <TextBlock DockPanel.Dock="Top" Text="Журнал" FontWeight="SemiBold" Margin="0,0,0,8" />

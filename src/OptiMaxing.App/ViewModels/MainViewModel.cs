@@ -8,6 +8,12 @@ using OptiMaxing.Core.Safety;
 
 namespace OptiMaxing.App.ViewModels;
 
+/// <summary>One row in the left-side category sidebar: category name (or AllCategories) and
+/// how many tweaks fall into it, for the "tree with counts" from the original spec. Categories
+/// are flat (no sub-categories exist in the catalog), so a single-level list serves the same
+/// purpose as a tree without the added complexity of a real TreeView/HierarchicalDataTemplate.</summary>
+public sealed record CategoryEntry(string Name, int Count);
+
 public sealed class MainViewModel : ObservableObject
 {
     private readonly OptimizationEngine _engine;
@@ -34,8 +40,10 @@ public sealed class MainViewModel : ObservableObject
 
         _all = catalog.BuildAll().Select(o => new OptimizationViewModel(o)).ToList();
 
-        Categories = new ObservableCollection<string>(
-            new[] { AllCategories }.Concat(_all.Select(o => o.Category).Distinct().OrderBy(c => c)));
+        var perCategory = _all.GroupBy(o => o.Category).OrderBy(g => g.Key);
+        CategoryEntries = new ObservableCollection<CategoryEntry>(
+            new[] { new CategoryEntry(AllCategories, _all.Count) }
+                .Concat(perCategory.Select(g => new CategoryEntry(g.Key, g.Count()))));
 
         Visible = new ObservableCollection<OptimizationViewModel>(_all);
 
@@ -61,7 +69,9 @@ public sealed class MainViewModel : ObservableObject
 
     public const string AllCategories = "Все категории";
 
-    public ObservableCollection<string> Categories { get; }
+    /// <summary>Left-side category tree: name + count of tweaks in it, computed once from the
+    /// full catalog (counts don't change as selection/state changes, only as filter changes).</summary>
+    public ObservableCollection<CategoryEntry> CategoryEntries { get; }
     public ObservableCollection<OptimizationViewModel> Visible { get; }
     public ObservableCollection<string> LogLines { get; } = [];
 

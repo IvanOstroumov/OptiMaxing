@@ -5,7 +5,11 @@ using OptiMaxing.Core.Optimizations.Catalog;
 namespace OptiMaxing.Core.Optimizations;
 
 /// <summary>Single place where every shipped optimization is registered.</summary>
-public sealed class OptimizationCatalog(IRegistryProvider registry, IServiceManager services, IProcessRunner processRunner)
+public sealed class OptimizationCatalog(
+    IRegistryProvider registry,
+    IServiceManager services,
+    IProcessRunner processRunner,
+    IFileSystem fileSystem)
 {
     public IReadOnlyList<IOptimization> BuildAll()
     {
@@ -24,6 +28,8 @@ public sealed class OptimizationCatalog(IRegistryProvider registry, IServiceMana
             new WidgetsDisable(registry),
             new TaskbarChatDisable(registry),
             new BingSearchSuggestionsDisable(registry),
+            new TempFilesCleanup(fileSystem),
+            new ShaderCacheCleanup(fileSystem),
 
             // Caution
             new PrintSpoolerDisable(services),
@@ -39,6 +45,8 @@ public sealed class OptimizationCatalog(IRegistryProvider registry, IServiceMana
             new MapsBrokerDisable(services),
             new WmpNetworkSharingDisable(services),
             new RemoteRegistryDisable(services),
+            new WindowsUpdateCacheCleanup(fileSystem, services),
+            new BrowserCacheCleanup(fileSystem),
 
             // Advanced
             new VbsMemoryIntegrityDisable(registry),

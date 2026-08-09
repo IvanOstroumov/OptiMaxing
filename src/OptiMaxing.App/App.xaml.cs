@@ -29,11 +29,12 @@ public partial class App : Application
         var registry = new WindowsRegistryProvider();
         var processRunner = new ProcessRunner();
         var services = new WindowsServiceManager();
+        var fileSystem = new RealFileSystem();
         var backups = new BackupService(logger);
         var journal = new OperationJournal(logger);
         var restorePoints = new RestorePointService(processRunner, logger);
         var engine = new OptimizationEngine(backups, journal, restorePoints, logger);
-        var catalog = new OptimizationCatalog(registry, services, processRunner);
+        var catalog = new OptimizationCatalog(registry, services, processRunner, fileSystem);
 
         logger.Write(LogLevel.Info, "OptiMaxing started.");
 

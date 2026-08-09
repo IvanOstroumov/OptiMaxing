@@ -35,6 +35,10 @@ public sealed class OptimizationCatalog(IRegistryProvider registry, IServiceMana
             new CopilotDisable(registry),
             new SettingSyncDisable(registry),
             new RecallDisable(registry),
+            new FaxServiceDisable(services),
+            new MapsBrokerDisable(services),
+            new WmpNetworkSharingDisable(services),
+            new RemoteRegistryDisable(services),
 
             // Advanced
             new VbsMemoryIntegrityDisable(registry),
@@ -43,6 +47,41 @@ public sealed class OptimizationCatalog(IRegistryProvider registry, IServiceMana
         // Bloatware removal: one optimization per curated whitelist entry.
         all.AddRange(BloatwareCatalog.Entries.Select(app => new AppxBloatwareRemove(processRunner, app)));
 
+        // Scheduled tasks: one optimization per curated whitelist entry.
+        all.AddRange(ScheduledTaskCatalog.Entries.Select(task => new ScheduledTaskDisable(processRunner, task)));
+
+        // Logon autostart entries: discovered live per machine, unlike the curated
+        // lists above — there is no fixed catalog of "everyone's startup apps".
+        all.AddRange(DiscoverStartupPrograms());
+
         return all;
+    }
+
+    private static readonly (Abstractions.RegistryHive Hive, string SubKey)[] RunKeys =
+    [
+        (Abstractions.RegistryHive.CurrentUser, @"Software\Microsoft\Windows\CurrentVersion\Run"),
+        (Abstractions.RegistryHive.LocalMachine, @"Software\Microsoft\Windows\CurrentVersion\Run"),
+    ];
+
+    private IEnumerable<IOptimization> DiscoverStartupPrograms()
+    {
+        foreach (var (hive, subKey) in RunKeys)
+        {
+            IReadOnlyList<string> names;
+            try
+            {
+                names = registry.GetValueNames(hive, subKey);
+            }
+            catch
+            {
+                continue; // key may not exist on a minimal/scanned machine
+            }
+
+            foreach (var name in names)
+            {
+                var command = registry.GetValue(hive, subKey, name)?.ToString() ?? string.Empty;
+                yield return new StartupProgramDisable(registry, hive, subKey, name, command);
+            }
+        }
     }
 }

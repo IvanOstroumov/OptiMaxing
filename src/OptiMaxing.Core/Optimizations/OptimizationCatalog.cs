@@ -16,12 +16,19 @@ public sealed class OptimizationCatalog(IRegistryProvider registry, IServiceMana
         new GameDvrDisable(registry),
         new SysMainDisable(services),
         new PowerPlanUltimatePerformance(processRunner),
+        new AdvertisingIdDisable(registry),
+        new TailoredExperiencesDisable(registry),
+        new ActivityHistoryDisable(registry),
 
         // Caution
         new PrintSpoolerDisable(services),
         new DiagTrackDisable(services),
         new WindowsSearchDisable(services),
         new DnsChangeCloudflare(processRunner),
+        new CortanaSearchDisable(registry),
+        new DiagnosticDataBasic(registry),
+        new CopilotDisable(registry),
+        new SettingSyncDisable(registry),
 
         // Advanced
         new VbsMemoryIntegrityDisable(registry),

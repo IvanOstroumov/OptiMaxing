@@ -30,6 +30,10 @@ public sealed class OptimizationCatalog(
             new BingSearchSuggestionsDisable(registry),
             new TempFilesCleanup(fileSystem),
             new ShaderCacheCleanup(fileSystem),
+            new FullscreenOptimizationsDisable(registry),
+            new NetworkThrottlingIndexDisable(registry),
+            new NtfsLastAccessDisable(processRunner),
+            new WifiPowerSavingDisable(processRunner),
 
             // Caution
             new PrintSpoolerDisable(services),

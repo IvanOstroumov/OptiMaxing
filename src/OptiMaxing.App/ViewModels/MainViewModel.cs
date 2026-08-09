@@ -29,14 +29,17 @@ public sealed class MainViewModel : ObservableObject
     private bool _advancedUnlocked;
 
     public AdvisoryViewModel Advisory { get; } = new();
+    public SystemHealthViewModel Health { get; }
 
     public MainViewModel(
         OptimizationCatalog catalog,
         OptimizationEngine engine,
-        IRestorePointService restorePoints)
+        IRestorePointService restorePoints,
+        SystemHealthService health)
     {
         _engine = engine;
         _restorePoints = restorePoints;
+        Health = new SystemHealthViewModel(health);
 
         _all = catalog.BuildAll().Select(o => new OptimizationViewModel(o)).ToList();
 

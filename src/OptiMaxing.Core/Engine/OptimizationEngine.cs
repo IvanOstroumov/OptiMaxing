@@ -37,6 +37,26 @@ public sealed class OptimizationEngine(
         return null;
     }
 
+    /// <summary>
+    /// Hard block (not a soft warning, per the customer's decision) when a selected
+    /// tweak conflicts with anti-cheat requirements of a game found on this machine.
+    /// </summary>
+    public string? CheckAntiCheatConflicts(IReadOnlyList<IOptimization> selection, IEnumerable<string> libraryRoots)
+    {
+        var conflicting = selection.Where(o => AntiCheatGuard.VbsDependentOptimizationIds.Contains(o.Id)).ToList();
+        if (conflicting.Count == 0)
+            return null;
+
+        var detected = AntiCheatGuard.DetectInstalled(libraryRoots);
+        if (detected.Count == 0)
+            return null;
+
+        var tweakNames = string.Join(", ", conflicting.Select(o => o.DisplayName));
+        var gameNames = string.Join(", ", detected.Select(g => g.DisplayName));
+        return $"Заблокировано: найдены игры, требующие VBS/Secure Boot ({gameNames}). " +
+               $"Применение '{tweakNames}' сломает их анти-чит. Убери игру или сними этот твик из выбора.";
+    }
+
     public async Task<BatchResult> ApplyBatchAsync(
         IReadOnlyList<IOptimization> selection,
         IProgress<string> log,

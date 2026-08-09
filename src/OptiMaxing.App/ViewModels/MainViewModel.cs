@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Windows;
 using OptiMaxing.Core.Engine;
 using OptiMaxing.Core.Model;
@@ -191,6 +192,14 @@ public sealed class MainViewModel : ObservableObject
             return;
         }
 
+        var antiCheatBlock = _engine.CheckAntiCheatConflicts(
+            selection.Select(o => o.Model).ToList(), GameLibraryRoots());
+        if (antiCheatBlock is not null)
+        {
+            MessageBox.Show(antiCheatBlock, "Заблокировано: конфликт с анти-читом", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+
         var irreversible = selection.Where(o => o.Reversibility == Reversibility.Irreversible).ToList();
         if (irreversible.Count > 0)
         {
@@ -258,6 +267,19 @@ public sealed class MainViewModel : ObservableObject
         finally
         {
             IsBusy = false;
+        }
+    }
+
+    private static IEnumerable<string> GameLibraryRoots()
+    {
+        var drives = DriveInfo.GetDrives().Where(d => d.DriveType == DriveType.Fixed).Select(d => d.Name);
+
+        foreach (var drive in drives)
+        {
+            yield return Path.Combine(drive, "Program Files (x86)", "Steam", "steamapps", "common");
+            yield return Path.Combine(drive, "Program Files", "Epic Games");
+            yield return Path.Combine(drive, "Program Files (x86)", "Battle.net");
+            yield return Path.Combine(drive, "Games");
         }
     }
 

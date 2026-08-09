@@ -43,126 +43,206 @@
             </DockPanel>
         </Border>
 
-        <!-- Toolbar -->
-        <Grid Grid.Row="2" Margin="0,0,0,12">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
+        <!-- Tabs -->
+        <TabControl Grid.Row="2" Grid.RowSpan="3" Background="Transparent" BorderThickness="0">
+            <TabItem Header="Твики">
+                <Grid Margin="0,12,0,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
 
-            <TextBox Grid.Column="0"
-                     Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged, Delay=150}"
-                     ToolTip="Поиск по названию, описанию и категории" />
+                    <!-- Toolbar -->
+                    <Grid Grid.Row="0" Margin="0,0,0,12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
 
-            <ComboBox Grid.Column="1" Width="200" Margin="10,0,0,0"
-                      ItemsSource="{Binding Categories}"
-                      SelectedItem="{Binding SelectedCategory}" />
+                        <TextBox Grid.Column="0"
+                                 Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged, Delay=150}"
+                                 ToolTip="Поиск по названию, описанию и категории" />
 
-            <StackPanel Grid.Column="2" Orientation="Horizontal" Margin="10,0,0,0">
-                <Button Content="Пресет: безопасные" Command="{Binding SelectSafePresetCommand}" />
-                <Button Content="Снять выделение" Command="{Binding ClearSelectionCommand}" Margin="8,0,0,0" />
-                <Button Content="Обновить состояние" Command="{Binding ScanCommand}" Margin="8,0,0,0" />
-            </StackPanel>
-        </Grid>
+                        <ComboBox Grid.Column="1" Width="200" Margin="10,0,0,0"
+                                  ItemsSource="{Binding Categories}"
+                                  SelectedItem="{Binding SelectedCategory}" />
 
-        <!-- Content -->
-        <Grid Grid.Row="3">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="2*" />
-                <ColumnDefinition Width="8" />
-                <ColumnDefinition Width="1*" />
-            </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="2" Orientation="Horizontal" Margin="10,0,0,0">
+                            <Button Content="Пресет: безопасные" Command="{Binding SelectSafePresetCommand}" />
+                            <Button Content="Снять выделение" Command="{Binding ClearSelectionCommand}" Margin="8,0,0,0" />
+                            <Button Content="Обновить состояние" Command="{Binding ScanCommand}" Margin="8,0,0,0" />
+                        </StackPanel>
+                    </Grid>
 
-            <Border Grid.Column="0" Background="{StaticResource PanelBrush}" CornerRadius="8"
-                    BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
-                <ListBox ItemsSource="{Binding Visible}" Background="Transparent" BorderThickness="0"
-                         ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                         HorizontalContentAlignment="Stretch">
-                    <ListBox.ItemContainerStyle>
-                        <Style TargetType="ListBoxItem">
-                            <Setter Property="Background" Value="Transparent" />
-                            <Setter Property="Padding" Value="0" />
-                        </Style>
-                    </ListBox.ItemContainerStyle>
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <Border Padding="12,10" Margin="4"
-                                    BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,1">
-                                <DockPanel>
-                                    <CheckBox DockPanel.Dock="Left" IsChecked="{Binding IsSelected}"
-                                              VerticalAlignment="Top" Margin="0,2,12,0" />
+                    <!-- Content -->
+                    <Grid Grid.Row="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="2*" />
+                            <ColumnDefinition Width="8" />
+                            <ColumnDefinition Width="1*" />
+                        </Grid.ColumnDefinitions>
 
-                                    <StackPanel>
-                                        <StackPanel Orientation="Horizontal">
-                                            <TextBlock Text="{Binding DisplayName}" FontWeight="SemiBold" FontSize="14" />
+                        <Border Grid.Column="0" Background="{StaticResource PanelBrush}" CornerRadius="8"
+                                BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
+                            <ListBox ItemsSource="{Binding Visible}" Background="Transparent" BorderThickness="0"
+                                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                     HorizontalContentAlignment="Stretch">
+                                <ListBox.ItemContainerStyle>
+                                    <Style TargetType="ListBoxItem">
+                                        <Setter Property="Background" Value="Transparent" />
+                                        <Setter Property="Padding" Value="0" />
+                                    </Style>
+                                </ListBox.ItemContainerStyle>
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Padding="12,10" Margin="4"
+                                                BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,1">
+                                            <DockPanel>
+                                                <CheckBox DockPanel.Dock="Left" IsChecked="{Binding IsSelected}"
+                                                          VerticalAlignment="Top" Margin="0,2,12,0" />
 
-                                            <Border CornerRadius="4" Padding="6,1" Margin="10,0,0,0"
-                                                    Background="#1e2a3a">
-                                                <TextBlock Text="{Binding RiskText}" FontSize="11"
-                                                           Foreground="{Binding Risk, Converter={StaticResource RiskToBrush}}" />
-                                            </Border>
+                                                <StackPanel>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="{Binding DisplayName}" FontWeight="SemiBold" FontSize="14" />
 
-                                            <Border CornerRadius="4" Padding="6,1" Margin="6,0,0,0" Background="#1e2a3a">
-                                                <TextBlock Text="{Binding ReversibilityText}" FontSize="11"
-                                                           Style="{StaticResource MutedText}" />
-                                            </Border>
+                                                        <Border CornerRadius="4" Padding="6,1" Margin="10,0,0,0"
+                                                                Background="#1e2a3a">
+                                                            <TextBlock Text="{Binding RiskText}" FontSize="11"
+                                                                       Foreground="{Binding Risk, Converter={StaticResource RiskToBrush}}" />
+                                                        </Border>
 
-                                            <TextBlock Text="перезагрузка" FontSize="11" Margin="6,0,0,0"
-                                                       Style="{StaticResource MutedText}"
-                                                       Visibility="{Binding RequiresRestart, Converter={StaticResource BoolToVisibility}}" />
+                                                        <Border CornerRadius="4" Padding="6,1" Margin="6,0,0,0" Background="#1e2a3a">
+                                                            <TextBlock Text="{Binding ReversibilityText}" FontSize="11"
+                                                                       Style="{StaticResource MutedText}" />
+                                                        </Border>
+
+                                                        <TextBlock Text="перезагрузка" FontSize="11" Margin="6,0,0,0"
+                                                                   Style="{StaticResource MutedText}"
+                                                                   Visibility="{Binding RequiresRestart, Converter={StaticResource BoolToVisibility}}" />
+                                                    </StackPanel>
+
+                                                    <TextBlock Text="{Binding Description}" Style="{StaticResource MutedText}"
+                                                               Margin="0,4,0,0" />
+
+                                                    <TextBlock Style="{StaticResource MutedText}" Margin="0,4,0,0"
+                                                               Foreground="{StaticResource RiskCautionBrush}"
+                                                               Text="{Binding TradeOff, StringFormat='Цена: {0}'}"
+                                                               Visibility="{Binding TradeOff, Converter={StaticResource TextToVisibility}}" />
+
+                                                    <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
+                                                        <TextBlock Text="{Binding StateText}" FontSize="11"
+                                                                   Foreground="{StaticResource AccentBrush}" />
+                                                        <TextBlock Text="— настройка задана другим инструментом" FontSize="11"
+                                                                   Margin="8,0,0,0"
+                                                                   Foreground="{StaticResource RiskCautionBrush}"
+                                                                   Visibility="{Binding HasWarning, Converter={StaticResource BoolToVisibility}}" />
+                                                    </StackPanel>
+                                                </StackPanel>
+                                            </DockPanel>
+                                        </Border>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </Border>
+
+                        <Border Grid.Column="2" Background="{StaticResource PanelBrush}" CornerRadius="8"
+                                BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" Padding="12">
+                            <DockPanel>
+                                <TextBlock DockPanel.Dock="Top" Text="Журнал" FontWeight="SemiBold" Margin="0,0,0,8" />
+                                <ListBox ItemsSource="{Binding LogLines}" Background="Transparent" BorderThickness="0"
+                                         Foreground="{StaticResource MutedTextBrush}"
+                                         FontFamily="Consolas" FontSize="12" />
+                            </DockPanel>
+                        </Border>
+                    </Grid>
+
+                    <!-- Footer -->
+                    <DockPanel Grid.Row="2" Margin="0,12,0,0">
+                        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                            <Button Content="Откатить выбранное" Command="{Binding RevertCommand}" />
+                            <Button Content="Применить выбранное" Command="{Binding ApplyCommand}"
+                                    Style="{StaticResource AccentButton}" Margin="10,0,0,0" />
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <ProgressBar Width="140" Height="4" IsIndeterminate="True"
+                                         Foreground="{StaticResource AccentBrush}" Background="Transparent"
+                                         BorderThickness="0" Margin="0,0,10,0"
+                                         Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisibility}}" />
+                            <TextBlock Text="{Binding StatusText}" Style="{StaticResource MutedText}" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </DockPanel>
+                </Grid>
+            </TabItem>
+
+            <TabItem Header="Инструменты и советы" DataContext="{Binding Advisory}">
+                <ScrollViewer Margin="0,12,0,0" VerticalScrollBarVisibility="Auto">
+                    <StackPanel>
+                        <TextBlock Text="Инструменты мониторинга" FontWeight="SemiBold" FontSize="15" Margin="0,0,0,8" />
+                        <TextBlock Style="{StaticResource MutedText}" Margin="0,0,0,10" TextWrapping="Wrap"
+                                   Text="OptiMaxing не переизобретает эти инструменты — если они уже установлены, запускает их; если нет, откроет страницу загрузки." />
+
+                        <ItemsControl ItemsSource="{Binding Tools}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Background="{StaticResource PanelBrush}" CornerRadius="8"
+                                            BorderBrush="{StaticResource BorderBrush}" BorderThickness="1"
+                                            Padding="12,10" Margin="0,0,0,8">
+                                        <DockPanel>
+                                            <Button DockPanel.Dock="Right" Content="{Binding ActionText}"
+                                                    Command="{Binding LaunchCommand}" VerticalAlignment="Center" />
+                                            <StackPanel Margin="0,0,12,0">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="{Binding Name}" FontWeight="SemiBold" FontSize="14" />
+                                                    <TextBlock Text="установлено" FontSize="11" Margin="10,2,0,0"
+                                                               Foreground="{StaticResource AccentBrush}"
+                                                               Visibility="{Binding IsInstalled, Converter={StaticResource BoolToVisibility}}" />
+                                                </StackPanel>
+                                                <TextBlock Text="{Binding Description}" Style="{StaticResource MutedText}" Margin="0,4,0,0" TextWrapping="Wrap" />
+                                            </StackPanel>
+                                        </DockPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                        <TextBlock Text="Что не автоматизируется программно" FontWeight="SemiBold" FontSize="15" Margin="0,20,0,8" />
+                        <ItemsControl ItemsSource="{Binding Advisories}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Background="{StaticResource PanelBrush}" CornerRadius="8"
+                                            BorderBrush="{StaticResource BorderBrush}" BorderThickness="1"
+                                            Padding="12,10" Margin="0,0,0,8">
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding Title}" FontWeight="SemiBold" FontSize="14" />
+                                            <TextBlock Text="{Binding Advice}" Style="{StaticResource MutedText}" Margin="0,4,0,0" TextWrapping="Wrap" />
                                         </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
 
-                                        <TextBlock Text="{Binding Description}" Style="{StaticResource MutedText}"
-                                                   Margin="0,4,0,0" />
-
-                                        <TextBlock Style="{StaticResource MutedText}" Margin="0,4,0,0"
-                                                   Foreground="{StaticResource RiskCautionBrush}"
-                                                   Text="{Binding TradeOff, StringFormat='Цена: {0}'}"
-                                                   Visibility="{Binding TradeOff, Converter={StaticResource TextToVisibility}}" />
-
-                                        <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
-                                            <TextBlock Text="{Binding StateText}" FontSize="11"
-                                                       Foreground="{StaticResource AccentBrush}" />
-                                            <TextBlock Text="— настройка задана другим инструментом" FontSize="11"
-                                                       Margin="8,0,0,0"
-                                                       Foreground="{StaticResource RiskCautionBrush}"
-                                                       Visibility="{Binding HasWarning, Converter={StaticResource BoolToVisibility}}" />
+                        <TextBlock Text="Твики, которые мы намеренно НЕ реализовали" FontWeight="SemiBold" FontSize="15" Margin="0,20,0,8" />
+                        <ItemsControl ItemsSource="{Binding Myths}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Background="{StaticResource PanelBrush}" CornerRadius="8"
+                                            BorderBrush="{StaticResource BorderBrush}" BorderThickness="1"
+                                            Padding="12,10" Margin="0,0,0,8">
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding Title}" FontWeight="SemiBold" FontSize="14" />
+                                            <TextBlock Text="{Binding Reason}" Style="{StaticResource MutedText}" Margin="0,4,0,0"
+                                                       Foreground="{StaticResource RiskCautionBrush}" TextWrapping="Wrap" />
                                         </StackPanel>
-                                    </StackPanel>
-                                </DockPanel>
-                            </Border>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
-            </Border>
-
-            <Border Grid.Column="2" Background="{StaticResource PanelBrush}" CornerRadius="8"
-                    BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" Padding="12">
-                <DockPanel>
-                    <TextBlock DockPanel.Dock="Top" Text="Журнал" FontWeight="SemiBold" Margin="0,0,0,8" />
-                    <ListBox ItemsSource="{Binding LogLines}" Background="Transparent" BorderThickness="0"
-                             Foreground="{StaticResource MutedTextBrush}"
-                             FontFamily="Consolas" FontSize="12" />
-                </DockPanel>
-            </Border>
-        </Grid>
-
-        <!-- Footer -->
-        <DockPanel Grid.Row="4" Margin="0,12,0,0">
-            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
-                <Button Content="Откатить выбранное" Command="{Binding RevertCommand}" />
-                <Button Content="Применить выбранное" Command="{Binding ApplyCommand}"
-                        Style="{StaticResource AccentButton}" Margin="10,0,0,0" />
-            </StackPanel>
-
-            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                <ProgressBar Width="140" Height="4" IsIndeterminate="True"
-                             Foreground="{StaticResource AccentBrush}" Background="Transparent"
-                             BorderThickness="0" Margin="0,0,10,0"
-                             Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisibility}}" />
-                <TextBlock Text="{Binding StatusText}" Style="{StaticResource MutedText}" VerticalAlignment="Center" />
-            </StackPanel>
-        </DockPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+        </TabControl>
     </Grid>
 </Window>

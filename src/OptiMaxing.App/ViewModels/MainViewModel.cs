@@ -22,6 +22,8 @@ public sealed class MainViewModel : ObservableObject
     private string _restorePointBanner = string.Empty;
     private bool _advancedUnlocked;
 
+    public AdvisoryViewModel Advisory { get; } = new();
+
     public MainViewModel(
         OptimizationCatalog catalog,
         OptimizationEngine engine,

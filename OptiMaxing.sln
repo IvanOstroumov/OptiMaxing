@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OptiMaxing.Core", "src\Opti
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OptiMaxing.Tests", "tests\OptiMaxing.Tests\OptiMaxing.Tests.csproj", "{B2CD81E8-63D7-4781-B32E-94A831A458ED}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OptiMaxing.Diagnostics", "src\OptiMaxing.Diagnostics\OptiMaxing.Diagnostics.csproj", "{0836AA8B-9CD1-4ACD-B4FB-DA825EAC64DB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -57,6 +59,18 @@ Global
 		{B2CD81E8-63D7-4781-B32E-94A831A458ED}.Release|x64.Build.0 = Release|Any CPU
 		{B2CD81E8-63D7-4781-B32E-94A831A458ED}.Release|x86.ActiveCfg = Release|Any CPU
 		{B2CD81E8-63D7-4781-B32E-94A831A458ED}.Release|x86.Build.0 = Release|Any CPU
+		{0836AA8B-9CD1-4ACD-B4FB-DA825EAC64DB}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{0836AA8B-9CD1-4ACD-B4FB-DA825EAC64DB}.Debug|Any CPU.Build.0 = Debug|x64
+		{0836AA8B-9CD1-4ACD-B4FB-DA825EAC64DB}.Debug|x64.ActiveCfg = Debug|x64
+		{0836AA8B-9CD1-4ACD-B4FB-DA825EAC64DB}.Debug|x64.Build.0 = Debug|x64
+		{0836AA8B-9CD1-4ACD-B4FB-DA825EAC64DB}.Debug|x86.ActiveCfg = Debug|x64
+		{0836AA8B-9CD1-4ACD-B4FB-DA825EAC64DB}.Debug|x86.Build.0 = Debug|x64
+		{0836AA8B-9CD1-4ACD-B4FB-DA825EAC64DB}.Release|Any CPU.ActiveCfg = Release|x64
+		{0836AA8B-9CD1-4ACD-B4FB-DA825EAC64DB}.Release|Any CPU.Build.0 = Release|x64
+		{0836AA8B-9CD1-4ACD-B4FB-DA825EAC64DB}.Release|x64.ActiveCfg = Release|x64
+		{0836AA8B-9CD1-4ACD-B4FB-DA825EAC64DB}.Release|x64.Build.0 = Release|x64
+		{0836AA8B-9CD1-4ACD-B4FB-DA825EAC64DB}.Release|x86.ActiveCfg = Release|x64
+		{0836AA8B-9CD1-4ACD-B4FB-DA825EAC64DB}.Release|x86.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -65,5 +79,6 @@ Global
 		{81C1CFB1-BEFA-4ECA-A735-0344C41928A2} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 		{2D8ACA17-A1E0-4866-8A1D-13A54AF7307E} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 		{B2CD81E8-63D7-4781-B32E-94A831A458ED} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
+		{0836AA8B-9CD1-4ACD-B4FB-DA825EAC64DB} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 	EndGlobalSection
 EndGlobal

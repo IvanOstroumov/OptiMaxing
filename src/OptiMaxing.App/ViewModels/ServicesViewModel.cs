@@ -9,7 +9,15 @@ public enum ServiceSort { Name, Status, StartupType }
 
 public sealed class ServiceEntryRow(ServiceRow row) : ObservableObject
 {
+    private bool _isChecked;
+
     public ServiceRow Row { get; } = row;
+
+    public bool IsChecked
+    {
+        get => _isChecked;
+        set => SetField(ref _isChecked, value);
+    }
 
     public string Name => Row.Info.Name;
     public string DisplayName => Row.Info.DisplayName;
@@ -48,6 +56,13 @@ public sealed class ServicesViewModel : ObservableObject
         ToggleRunningCommand = new RelayCommand(
             () => { ToggleRunning(); return Task.CompletedTask; }, () => Selected is not null);
 
+        DisableCheckedCommand = new RelayCommand(
+            () => { SetStartupChecked(ServiceStartupType.Disabled); return Task.CompletedTask; }, () => Entries.Any(e => e.IsChecked));
+        ManualCheckedCommand = new RelayCommand(
+            () => { SetStartupChecked(ServiceStartupType.Manual); return Task.CompletedTask; }, () => Entries.Any(e => e.IsChecked));
+        AutomaticCheckedCommand = new RelayCommand(
+            () => { SetStartupChecked(ServiceStartupType.Automatic); return Task.CompletedTask; }, () => Entries.Any(e => e.IsChecked));
+
         Refresh();
     }
 
@@ -58,6 +73,9 @@ public sealed class ServicesViewModel : ObservableObject
     public RelayCommand ManualCommand { get; }
     public RelayCommand AutomaticCommand { get; }
     public RelayCommand ToggleRunningCommand { get; }
+    public RelayCommand DisableCheckedCommand { get; }
+    public RelayCommand ManualCheckedCommand { get; }
+    public RelayCommand AutomaticCheckedCommand { get; }
 
     public ServiceEntryRow? Selected
     {
@@ -131,7 +149,13 @@ public sealed class ServicesViewModel : ObservableObject
         Entries.Clear();
         foreach (var row in sorted)
         {
-            Entries.Add(new ServiceEntryRow(row));
+            var entry = new ServiceEntryRow(row);
+            entry.PropertyChanged += (_, args) =>
+            {
+                if (args.PropertyName == nameof(ServiceEntryRow.IsChecked))
+                    RefreshCheckedCommands();
+            };
+            Entries.Add(entry);
         }
 
         Selected = Entries.FirstOrDefault(e => e.Name == selectedName);
@@ -178,6 +202,45 @@ public sealed class ServicesViewModel : ObservableObject
 
         var result = _services.SetRunning(row.Row, !stopping);
         Refresh(result.Message);
+    }
+
+    private void SetStartupChecked(ServiceStartupType type)
+    {
+        var checkedRows = Entries.Where(e => e.IsChecked).ToList();
+        if (checkedRows.Count == 0)
+        {
+            return;
+        }
+
+        var anyCritical = checkedRows.Any(r => r.IsCritical);
+        if (type == ServiceStartupType.Disabled && anyCritical)
+        {
+            var names = string.Join("\n  • ", checkedRows.Where(r => r.IsCritical).Select(r => r.DisplayName));
+            if (!Confirm(
+                $"Среди отмеченных служб есть критичные для Windows:\n  • {names}\n\n" +
+                "Их отключение может сломать загрузку, вход в систему, звук, сеть или защиту.\n\n" +
+                "Всё равно отключить все отмеченные службы?"))
+            {
+                return;
+            }
+        }
+
+        var appliedCount = 0;
+        foreach (var entry in checkedRows)
+        {
+            var result = _services.SetStartupType(entry.Row, type);
+            if (result.Succeeded)
+                appliedCount++;
+        }
+
+        Refresh($"Тип запуска изменён у {appliedCount} из {checkedRows.Count} отмеченных служб.");
+    }
+
+    private void RefreshCheckedCommands()
+    {
+        DisableCheckedCommand.RaiseCanExecuteChanged();
+        ManualCheckedCommand.RaiseCanExecuteChanged();
+        AutomaticCheckedCommand.RaiseCanExecuteChanged();
     }
 
     private static bool Confirm(string message) =>

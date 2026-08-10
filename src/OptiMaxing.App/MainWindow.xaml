@@ -565,6 +565,10 @@
                             <Button Content="Обычный" Command="{Binding SetNormalPriorityCommand}" Margin="8,0,0,0" />
                             <Button Content="Ниже" Command="{Binding SetLowPriorityCommand}" Margin="8,0,0,0" />
                             <Button Content="Завершить" Command="{Binding KillCommand}" Margin="8,0,0,0" />
+                            <Button Content="Отмеченным: высокий" Command="{Binding SetHighPriorityCheckedCommand}" Margin="16,0,0,0" />
+                            <Button Content="Обычный" Command="{Binding SetNormalPriorityCheckedCommand}" Margin="8,0,0,0" />
+                            <Button Content="Ниже" Command="{Binding SetLowPriorityCheckedCommand}" Margin="8,0,0,0" />
+                            <Button Content="Завершить отмеченные" Command="{Binding KillCheckedCommand}" Margin="8,0,0,0" />
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
                             <TextBox Text="{Binding Filter, UpdateSourceTrigger=PropertyChanged}"
@@ -619,6 +623,7 @@
                                 <DataTemplate>
                                     <Grid>
                                         <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
                                             <ColumnDefinition Width="*" />
                                             <ColumnDefinition Width="80" />
                                             <ColumnDefinition Width="90" />
@@ -626,7 +631,10 @@
                                             <ColumnDefinition Width="110" />
                                         </Grid.ColumnDefinitions>
 
-                                        <StackPanel Grid.Column="0">
+                                        <CheckBox Grid.Column="0" IsChecked="{Binding IsChecked}"
+                                                  VerticalAlignment="Center" Margin="0,0,10,0" />
+
+                                        <StackPanel Grid.Column="1">
                                             <StackPanel Orientation="Horizontal">
                                                 <TextBlock Text="{Binding Name}" FontWeight="SemiBold" FontSize="14" />
                                                 <TextBlock Text="{Binding Id, StringFormat='PID {0}'}"
@@ -650,13 +658,13 @@
                                                        TextTrimming="CharacterEllipsis" />
                                         </StackPanel>
 
-                                        <TextBlock Grid.Column="1" Text="{Binding CpuText}" VerticalAlignment="Center"
+                                        <TextBlock Grid.Column="2" Text="{Binding CpuText}" VerticalAlignment="Center"
                                                    HorizontalAlignment="Right" FontFamily="Consolas" />
-                                        <TextBlock Grid.Column="2" Text="{Binding MemoryText}" VerticalAlignment="Center"
+                                        <TextBlock Grid.Column="3" Text="{Binding MemoryText}" VerticalAlignment="Center"
                                                    HorizontalAlignment="Right" FontFamily="Consolas" />
-                                        <TextBlock Grid.Column="3" Text="{Binding ThreadsText}" VerticalAlignment="Center"
+                                        <TextBlock Grid.Column="4" Text="{Binding ThreadsText}" VerticalAlignment="Center"
                                                    HorizontalAlignment="Right" Style="{StaticResource MutedText}" />
-                                        <TextBlock Grid.Column="4" Text="{Binding PriorityText}" VerticalAlignment="Center"
+                                        <TextBlock Grid.Column="5" Text="{Binding PriorityText}" VerticalAlignment="Center"
                                                    HorizontalAlignment="Right" Style="{StaticResource MutedText}" />
                                     </Grid>
                                 </DataTemplate>
@@ -676,6 +684,9 @@
                             <Button Content="Авто" Command="{Binding AutomaticCommand}" Margin="8,0,0,0" />
                             <Button Content="Вручную" Command="{Binding ManualCommand}" Margin="8,0,0,0" />
                             <Button Content="Отключить" Command="{Binding DisableCommand}" Margin="8,0,0,0" />
+                            <Button Content="Отмеченным: авто" Command="{Binding AutomaticCheckedCommand}" Margin="16,0,0,0" />
+                            <Button Content="Вручную" Command="{Binding ManualCheckedCommand}" Margin="8,0,0,0" />
+                            <Button Content="Отключить" Command="{Binding DisableCheckedCommand}" Margin="8,0,0,0" />
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
                             <TextBox Text="{Binding Filter, UpdateSourceTrigger=PropertyChanged}"
@@ -733,12 +744,16 @@
                                 <DataTemplate>
                                     <Grid>
                                         <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
                                             <ColumnDefinition Width="*" />
                                             <ColumnDefinition Width="180" />
                                             <ColumnDefinition Width="110" />
                                         </Grid.ColumnDefinitions>
 
-                                        <StackPanel Grid.Column="0">
+                                        <CheckBox Grid.Column="0" IsChecked="{Binding IsChecked}"
+                                                  VerticalAlignment="Center" Margin="0,0,10,0" />
+
+                                        <StackPanel Grid.Column="1">
                                             <StackPanel Orientation="Horizontal">
                                                 <TextBlock Text="{Binding DisplayName}" FontWeight="SemiBold" FontSize="14"
                                                            TextTrimming="CharacterEllipsis" />
@@ -763,9 +778,9 @@
                                                        Visibility="{Binding HasNote, Converter={StaticResource BoolToVisibility}}" />
                                         </StackPanel>
 
-                                        <TextBlock Grid.Column="1" Text="{Binding StartupText}" VerticalAlignment="Center"
+                                        <TextBlock Grid.Column="2" Text="{Binding StartupText}" VerticalAlignment="Center"
                                                    HorizontalAlignment="Right" Style="{StaticResource MutedText}" />
-                                        <TextBlock Grid.Column="2" Text="{Binding StateText}" VerticalAlignment="Center"
+                                        <TextBlock Grid.Column="3" Text="{Binding StateText}" VerticalAlignment="Center"
                                                    HorizontalAlignment="Right" FontSize="12">
                                             <TextBlock.Style>
                                                 <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">

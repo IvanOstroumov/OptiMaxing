@@ -44,7 +44,8 @@ public partial class App : Application
         logger.Write(LogLevel.Info, "OptiMaxing started.");
 
         var startup = new StartupInventoryService(registry, fileSystem);
-        var viewModel = new MainViewModel(catalog, engine, restorePoints, health, sensors, startup);
+        var processes = new ProcessMonitor(new WindowsProcessInspector());
+        var viewModel = new MainViewModel(catalog, engine, restorePoints, health, sensors, startup, processes);
         var window = new MainWindow { DataContext = viewModel };
         window.Show();
 

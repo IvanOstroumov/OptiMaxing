@@ -1,6 +1,7 @@
 using System.Text;
 using OptiMaxing.Core.Abstractions;
 using OptiMaxing.Core.Platform;
+using OptiMaxing.Core.Safety;
 using OptiMaxing.Core.Startup;
 
 namespace OptiMaxing.Diagnostics;
@@ -21,6 +22,33 @@ internal static class Program
         DumpSensors(sensors);
 
         DumpStartup(new StartupInventoryService(new WindowsRegistryProvider(), new RealFileSystem()));
+        DumpProcesses(new ProcessMonitor(new WindowsProcessInspector()));
+    }
+
+    private static void DumpProcesses(ProcessMonitor monitor)
+    {
+        Section("Процессы (топ-15)");
+
+        // The first poll only establishes a baseline; CPU percentages exist only relative to it.
+        monitor.Poll();
+        Thread.Sleep(1000);
+        var samples = monitor.Poll();
+
+        Console.WriteLine($"Всего процессов: {samples.Count}");
+
+        foreach (var sample in samples
+                     .OrderByDescending(s => s.CpuPercent ?? -1)
+                     .ThenByDescending(s => s.Process.WorkingSetBytes)
+                     .Take(15))
+        {
+            var cpu = sample.CpuPercent is { } percent ? $"{percent,5:N1}%" : "    —";
+            var memory = sample.Process.WorkingSetBytes / 1024.0 / 1024.0;
+            var flags = (sample.Process.IsSystemCritical ? " [системный]" : string.Empty)
+                        + (sample.Process.IsResponding ? string.Empty : " [не отвечает]")
+                        + (sample.Process.AccessFailure is null ? string.Empty : " [нет доступа]");
+
+            Console.WriteLine($"  {cpu} {memory,8:N0} МБ  {sample.Process.Name} (PID {sample.Process.Id}){flags}");
+        }
     }
 
     private static void DumpStartup(StartupInventoryService startup)

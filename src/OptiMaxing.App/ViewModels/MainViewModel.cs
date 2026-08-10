@@ -32,6 +32,7 @@ public sealed class MainViewModel : ObservableObject
     public AdvisoryViewModel Advisory { get; } = new();
     public SystemHealthViewModel Health { get; }
     public StartupViewModel Startup { get; }
+    public ProcessesViewModel Processes { get; }
 
     public MainViewModel(
         OptimizationCatalog catalog,
@@ -39,9 +40,11 @@ public sealed class MainViewModel : ObservableObject
         IRestorePointService restorePoints,
         SystemHealthService health,
         SensorMonitor sensors,
-        StartupInventoryService startup)
+        StartupInventoryService startup,
+        ProcessMonitor processes)
     {
         Startup = new StartupViewModel(startup);
+        Processes = new ProcessesViewModel(processes);
         _engine = engine;
         _restorePoints = restorePoints;
         Health = new SystemHealthViewModel(health, sensors);

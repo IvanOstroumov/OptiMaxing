@@ -30,4 +30,11 @@
     <ProjectReference Include="..\OptiMaxing.Core\OptiMaxing.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- MainWindow.xaml's Icon="Resources/app.ico" resolves via pack URI at runtime, which
+         requires the file to be embedded as a WPF Resource, not just used as ApplicationIcon
+         (that only sets the exe's Win32 icon at compile time). -->
+    <Resource Include="Resources\app.ico" />
+  </ItemGroup>
+
 </Project>

@@ -214,8 +214,14 @@
 
                         <Border Grid.Column="2" Background="{StaticResource PanelBrush}" CornerRadius="8"
                                 BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
+                            <!-- ScrollUnit=Pixel keeps virtualization (these lists grow to hundreds of
+                                 rows) while scrolling by pixels instead of by whole cards — with the
+                                 default item-based scrolling one wheel tick skipped an entire tweak. -->
                             <ListBox ItemsSource="{Binding Visible}" Background="Transparent" BorderThickness="0"
                                      ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                     VirtualizingPanel.IsVirtualizing="True"
+                                     VirtualizingPanel.VirtualizationMode="Recycling"
+                                     VirtualizingPanel.ScrollUnit="Pixel"
                                      HorizontalContentAlignment="Stretch">
                                 <ListBox.ItemContainerStyle>
                                     <Style TargetType="ListBoxItem">
@@ -225,10 +231,36 @@
                                 </ListBox.ItemContainerStyle>
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
-                                        <Border Padding="12,10" Margin="4"
-                                                BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,1">
+                                        <!-- A ToggleButton, not a plain Border, so that clicking anywhere on the
+                                             card toggles the tweak instead of only the small checkbox hit area.
+                                             The template strips all button chrome; the CheckBox inside is a
+                                             non-interactive indicator so it cannot fight the parent for clicks. -->
+                                        <ToggleButton IsChecked="{Binding IsSelected}" Cursor="Hand"
+                                                      HorizontalContentAlignment="Stretch" Background="Transparent">
+                                            <ToggleButton.Template>
+                                                <ControlTemplate TargetType="ToggleButton">
+                                                    <Grid Margin="4">
+                                                        <Border x:Name="Card" CornerRadius="6" Background="Transparent"
+                                                                BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,1" />
+                                                        <Border x:Name="Accent" Width="3" HorizontalAlignment="Left"
+                                                                CornerRadius="2" Background="Transparent" Margin="0,2" />
+                                                        <ContentPresenter Margin="12,10" />
+                                                    </Grid>
+                                                    <ControlTemplate.Triggers>
+                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                            <Setter TargetName="Card" Property="Background" Value="#1a2433" />
+                                                        </Trigger>
+                                                        <Trigger Property="IsChecked" Value="True">
+                                                            <Setter TargetName="Card" Property="Background" Value="#1e3a5f" />
+                                                            <Setter TargetName="Accent" Property="Background"
+                                                                    Value="{StaticResource AccentBrush}" />
+                                                        </Trigger>
+                                                    </ControlTemplate.Triggers>
+                                                </ControlTemplate>
+                                            </ToggleButton.Template>
                                             <DockPanel>
-                                                <CheckBox DockPanel.Dock="Left" IsChecked="{Binding IsSelected}"
+                                                <CheckBox DockPanel.Dock="Left" IsChecked="{Binding IsSelected, Mode=OneWay}"
+                                                          IsHitTestVisible="False" Focusable="False"
                                                           VerticalAlignment="Top" Margin="0,2,12,0" />
 
                                                 <StackPanel>
@@ -269,7 +301,7 @@
                                                     </StackPanel>
                                                 </StackPanel>
                                             </DockPanel>
-                                        </Border>
+                                        </ToggleButton>
                                     </DataTemplate>
                                 </ListBox.ItemTemplate>
                             </ListBox>
@@ -299,7 +331,10 @@
                                          Foreground="{StaticResource AccentBrush}" Background="Transparent"
                                          BorderThickness="0" Margin="0,0,10,0"
                                          Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisibility}}" />
-                            <TextBlock Text="{Binding StatusText}" Style="{StaticResource MutedText}" VerticalAlignment="Center" />
+                            <TextBlock Text="{Binding SelectionSummary}" VerticalAlignment="Center"
+                                       FontWeight="SemiBold" Foreground="{StaticResource AccentBrush}" />
+                            <TextBlock Text="{Binding StatusText}" Style="{StaticResource MutedText}"
+                                       Margin="12,0,0,0" VerticalAlignment="Center" />
                         </StackPanel>
                     </DockPanel>
                 </Grid>

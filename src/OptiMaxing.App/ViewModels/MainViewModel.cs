@@ -43,6 +43,21 @@ public sealed class MainViewModel : ObservableObject
 
         _all = catalog.BuildAll().Select(o => new OptimizationViewModel(o)).ToList();
 
+        // Ticking a checkbox changes state on the item, not on this view model, so neither the
+        // "Выбрано: N" counter nor the Apply/Revert CanExecute would ever re-evaluate without
+        // listening in. RelayCommand is hand-rolled and does not hook CommandManager.
+        foreach (var item in _all)
+        {
+            item.PropertyChanged += (_, args) =>
+            {
+                if (args.PropertyName == nameof(OptimizationViewModel.IsSelected))
+                {
+                    OnPropertyChanged(nameof(SelectionSummary));
+                    RefreshCommands();
+                }
+            };
+        }
+
         var perCategory = _all.GroupBy(o => o.Category).OrderBy(g => g.Key);
         CategoryEntries = new ObservableCollection<CategoryEntry>(
             new[] { new CategoryEntry(AllCategories, _all.Count) }
@@ -87,6 +102,8 @@ public sealed class MainViewModel : ObservableObject
 
     public IReadOnlyList<OptimizationViewModel> SelectedItems =>
         _all.Where(o => o.IsSelected).ToList();
+
+    public string SelectionSummary => $"Выбрано: {_all.Count(o => o.IsSelected)} из {_all.Count}";
 
     public string SearchQuery
     {

@@ -36,11 +36,13 @@ public partial class App : Application
         var engine = new OptimizationEngine(backups, journal, restorePoints, logger);
         var catalog = new OptimizationCatalog(registry, services, processRunner, fileSystem);
         var systemInfo = new WindowsSystemInfoProvider();
-        var health = new SystemHealthService(systemInfo, restorePoints);
+        var hardware = new WmiHardwareInventoryProvider();
+        var health = new SystemHealthService(systemInfo, restorePoints, hardware);
+        var sensors = new SensorMonitor(new LibreHardwareSensorProvider());
 
         logger.Write(LogLevel.Info, "OptiMaxing started.");
 
-        var viewModel = new MainViewModel(catalog, engine, restorePoints, health);
+        var viewModel = new MainViewModel(catalog, engine, restorePoints, health, sensors);
         var window = new MainWindow { DataContext = viewModel };
         window.Show();
 

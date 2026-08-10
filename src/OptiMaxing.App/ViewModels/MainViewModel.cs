@@ -35,11 +35,12 @@ public sealed class MainViewModel : ObservableObject
         OptimizationCatalog catalog,
         OptimizationEngine engine,
         IRestorePointService restorePoints,
-        SystemHealthService health)
+        SystemHealthService health,
+        SensorMonitor sensors)
     {
         _engine = engine;
         _restorePoints = restorePoints;
-        Health = new SystemHealthViewModel(health);
+        Health = new SystemHealthViewModel(health, sensors);
 
         _all = catalog.BuildAll().Select(o => new OptimizationViewModel(o)).ToList();
 

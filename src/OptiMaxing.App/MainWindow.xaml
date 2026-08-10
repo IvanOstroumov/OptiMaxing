@@ -45,7 +45,8 @@
 
         <!-- Tabs -->
         <TabControl Grid.Row="2" Grid.RowSpan="3" Background="Transparent" BorderThickness="0">
-            <TabItem Header="Здоровье системы" DataContext="{Binding Health}">
+            <TabItem Header="Здоровье системы" DataContext="{Binding Health}"
+                     IsSelected="{Binding IsActive, Mode=OneWayToSource}">
                 <ScrollViewer Margin="0,12,0,0" VerticalScrollBarVisibility="Auto">
                     <StackPanel MaxWidth="760" HorizontalAlignment="Left">
                         <DockPanel Margin="0,0,0,12">
@@ -118,6 +119,63 @@
                                                     </ProgressBar.Style>
                                                 </ProgressBar>
                                                 <TextBlock Text="{Binding Summary}" Style="{StaticResource MutedText}" Margin="0,4,0,0" />
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Background="{StaticResource PanelBrush}" CornerRadius="8"
+                                BorderBrush="{StaticResource BorderBrush}" BorderThickness="1"
+                                Padding="14,10" Margin="0,10,0,0">
+                            <StackPanel>
+                                <TextBlock Text="Железо" FontWeight="SemiBold" Margin="0,0,0,6" />
+                                <ItemsControl ItemsSource="{Binding HardwareFacts}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding}" Style="{StaticResource MutedText}" Margin="0,2" />
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Background="{StaticResource PanelBrush}" CornerRadius="8"
+                                BorderBrush="{StaticResource BorderBrush}" BorderThickness="1"
+                                Padding="14,10" Margin="0,10,0,0">
+                            <StackPanel>
+                                <TextBlock Text="Датчики в реальном времени" FontWeight="SemiBold" Margin="0,0,0,6" />
+                                <TextBlock Text="{Binding SensorStatus}" TextWrapping="Wrap"
+                                           Foreground="{StaticResource RiskCautionBrush}" Margin="0,0,0,6"
+                                           Visibility="{Binding HasSensorProblem, Converter={StaticResource BoolToVisibility}}" />
+                                <ItemsControl ItemsSource="{Binding SensorGroups}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Margin="0,0,0,10">
+                                                <TextBlock Text="{Binding Title}" FontWeight="SemiBold" FontSize="13"
+                                                           Foreground="{StaticResource AccentBrush}" Margin="0,4,0,4" />
+                                                <ItemsControl ItemsSource="{Binding Sensors}">
+                                                    <ItemsControl.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <Grid Margin="0,1">
+                                                                <Grid.ColumnDefinitions>
+                                                                    <ColumnDefinition Width="*" />
+                                                                    <ColumnDefinition Width="110" />
+                                                                    <ColumnDefinition Width="110" />
+                                                                </Grid.ColumnDefinitions>
+                                                                <TextBlock Grid.Column="0" Text="{Binding Name}"
+                                                                           Style="{StaticResource MutedText}" />
+                                                                <TextBlock Grid.Column="1" Text="{Binding Value}"
+                                                                           HorizontalAlignment="Right" FontFamily="Consolas" />
+                                                                <TextBlock Grid.Column="2" Text="{Binding Max}"
+                                                                           HorizontalAlignment="Right" FontFamily="Consolas"
+                                                                           Style="{StaticResource MutedText}"
+                                                                           ToolTip="Максимум за сессию" />
+                                                            </Grid>
+                                                        </DataTemplate>
+                                                    </ItemsControl.ItemTemplate>
+                                                </ItemsControl>
                                             </StackPanel>
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>

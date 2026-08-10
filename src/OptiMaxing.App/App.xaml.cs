@@ -55,9 +55,10 @@ public partial class App : Application
         var programs = new InstalledProgramsService(registry, processRunner);
         var crashHistory = new CrashHistoryService(new RealEventLogProvider());
         var fileFinder = new FileFinderService(fileSystem);
+        var diskTree = new DiskTreeService(fileSystem);
         var viewModel = new MainViewModel(
             catalog, engine, restorePoints, health, sensors, startup, processes, serviceInventory, programs,
-            crashHistory, fileFinder);
+            crashHistory, fileFinder, diskTree);
         var window = new MainWindow { DataContext = viewModel };
         window.Show();
 

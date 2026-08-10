@@ -44,6 +44,7 @@ public sealed class MainViewModel : ObservableObject
     public ProgramsViewModel Programs { get; }
     public CrashHistoryViewModel CrashHistory { get; }
     public FileFinderViewModel FileFinder { get; }
+    public DiskUsageViewModel DiskUsage { get; }
 
     public MainViewModel(
         OptimizationCatalog catalog,
@@ -56,7 +57,8 @@ public sealed class MainViewModel : ObservableObject
         ServiceInventoryService services,
         InstalledProgramsService programs,
         CrashHistoryService crashHistory,
-        FileFinderService fileFinder)
+        FileFinderService fileFinder,
+        DiskTreeService diskTree)
     {
         Programs = new ProgramsViewModel(programs);
         Startup = new StartupViewModel(startup);
@@ -64,6 +66,7 @@ public sealed class MainViewModel : ObservableObject
         Services = new ServicesViewModel(services);
         CrashHistory = new CrashHistoryViewModel(crashHistory);
         FileFinder = new FileFinderViewModel(fileFinder);
+        DiskUsage = new DiskUsageViewModel(diskTree);
         _engine = engine;
         _restorePoints = restorePoints;
         Health = new SystemHealthViewModel(health, sensors);

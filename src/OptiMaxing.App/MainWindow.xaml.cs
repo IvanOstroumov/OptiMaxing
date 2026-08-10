@@ -1,6 +1,7 @@
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
+using OptiMaxing.App.ViewModels;
 
 namespace OptiMaxing.App;
 
@@ -23,5 +24,17 @@ public partial class MainWindow : Window
             var enabled = 1;
             DwmSetWindowAttribute(hwnd, DwmwaUseImmersiveDarkMode, ref enabled, sizeof(int));
         };
+    }
+
+    // The treemap canvas has no intrinsic size of its own (an ItemsControl over a Canvas panel
+    // doesn't report DesiredSize from its children's Canvas.Left/Top positions), so the view model
+    // needs to be told the available pixel area explicitly whenever the host border resizes.
+    private void DiskUsageCanvasHost_SizeChanged(object sender, SizeChangedEventArgs e)
+    {
+        if (((FrameworkElement)sender).DataContext is DiskUsageViewModel diskUsage)
+        {
+            diskUsage.CanvasWidth = e.NewSize.Width;
+            diskUsage.CanvasHeight = e.NewSize.Height;
+        }
     }
 }

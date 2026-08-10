@@ -1082,6 +1082,81 @@
                     </Border>
                 </DockPanel>
             </TabItem>
+
+            <TabItem Header="Диск" DataContext="{Binding DiskUsage}">
+                <DockPanel Margin="0,12,0,0">
+                    <StackPanel DockPanel.Dock="Top" Margin="0,0,0,10">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBox Text="{Binding RootPath, UpdateSourceTrigger=PropertyChanged}"
+                                     Width="360" VerticalAlignment="Center" />
+                            <Button Content="Диск C:\" Command="{Binding SetRootDriveCCommand}" Margin="8,0,0,0" />
+                            <Button Content="Сканировать" Command="{Binding ScanCommand}" Margin="16,0,0,0" />
+                            <Button Content="Наверх" Command="{Binding GoUpCommand}" Margin="16,0,0,0" />
+                        </StackPanel>
+                        <ItemsControl ItemsSource="{Binding Breadcrumb}" Margin="0,8,0,0">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Orientation="Horizontal" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding}" Style="{StaticResource MutedText}" Margin="0,0,6,0" />
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+
+                    <TextBlock DockPanel.Dock="Bottom" Text="{Binding StatusText}"
+                               Style="{StaticResource MutedText}" Margin="0,8,0,0" />
+
+                    <Border Background="{DynamicResource PanelBrush}" CornerRadius="8"
+                            BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+                            SizeChanged="DiskUsageCanvasHost_SizeChanged">
+                        <ItemsControl ItemsSource="{Binding Rectangles}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <Canvas />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemContainerStyle>
+                                <Style TargetType="ContentPresenter">
+                                    <Setter Property="Canvas.Left" Value="{Binding X}" />
+                                    <Setter Property="Canvas.Top" Value="{Binding Y}" />
+                                </Style>
+                            </ItemsControl.ItemContainerStyle>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Width="{Binding Width}" Height="{Binding Height}"
+                                            BorderBrush="#0d1420" BorderThickness="1" ClipToBounds="True">
+                                        <Border.Background>
+                                            <SolidColorBrush Color="{Binding ColorHex}" />
+                                        </Border.Background>
+                                        <Border.InputBindings>
+                                            <MouseBinding MouseAction="LeftDoubleClick"
+                                                          Command="{Binding RelativeSource={RelativeSource AncestorType=ItemsControl}, Path=DataContext.DrillInCommand}"
+                                                          CommandParameter="{Binding}" />
+                                            <MouseBinding MouseAction="RightClick"
+                                                          Command="{Binding RelativeSource={RelativeSource AncestorType=ItemsControl}, Path=DataContext.OpenInExplorerCommand}"
+                                                          CommandParameter="{Binding}" />
+                                        </Border.InputBindings>
+                                        <Border.ToolTip>
+                                            <TextBlock>
+                                                <Run Text="{Binding Name, Mode=OneWay}" />
+                                                <LineBreak />
+                                                <Run Text="{Binding SizeText, Mode=OneWay}" />
+                                            </TextBlock>
+                                        </Border.ToolTip>
+                                        <TextBlock Text="{Binding Name}" Foreground="White" FontSize="11"
+                                                   Margin="4,2" TextTrimming="CharacterEllipsis"
+                                                   Visibility="{Binding ShowLabel, Converter={StaticResource BoolToVisibility}}" />
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </Border>
+                </DockPanel>
+            </TabItem>
         </TabControl>
     </Grid>
 </Window>

@@ -45,7 +45,7 @@ public partial class App : Application
 
         logger.Write(LogLevel.Info, "OptiMaxing started.");
 
-        var startup = new StartupInventoryService(registry, fileSystem);
+        var startup = new StartupInventoryService(registry, fileSystem, processRunner);
         var processes = new ProcessMonitor(new WindowsProcessInspector());
         var serviceInventory = new ServiceInventoryService(services);
         var programs = new InstalledProgramsService(registry, processRunner);

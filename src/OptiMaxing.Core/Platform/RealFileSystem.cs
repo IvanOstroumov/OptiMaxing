@@ -64,6 +64,18 @@ public sealed class RealFileSystem : IFileSystem
         }
     }
 
+    public string? TryReadAllText(string path)
+    {
+        try
+        {
+            return File.ReadAllText(path);
+        }
+        catch (Exception ex) when (ex is UnauthorizedAccessException or IOException)
+        {
+            return null;
+        }
+    }
+
     public bool TryDeleteFile(string path)
     {
         try

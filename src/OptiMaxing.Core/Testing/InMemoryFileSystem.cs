@@ -8,6 +8,7 @@ public sealed class InMemoryFileSystem : IFileSystem
     private readonly Dictionary<string, FileEntry> _files = new(StringComparer.OrdinalIgnoreCase);
     private readonly HashSet<string> _directories = new(StringComparer.OrdinalIgnoreCase);
     private readonly HashSet<string> _lockedFiles = new(StringComparer.OrdinalIgnoreCase);
+    private readonly Dictionary<string, string> _contents = new(StringComparer.OrdinalIgnoreCase);
 
     public void SeedDirectory(string path) => _directories.Add(path);
 
@@ -25,8 +26,30 @@ public sealed class InMemoryFileSystem : IFileSystem
 
     public bool FileExists(string path) => _files.ContainsKey(path);
 
+    /// <summary>Seeds a file with readable content, for parsers rather than cleanup tests.</summary>
+    public void SeedText(string path, string content)
+    {
+        // Every ancestor counts as existing, like a real disk: a file two folders down still means
+        // the folder above it is there.
+        for (var directory = Path.GetDirectoryName(path);
+             !string.IsNullOrEmpty(directory);
+             directory = Path.GetDirectoryName(directory))
+        {
+            _directories.Add(directory);
+        }
+
+        _files[path] = new FileEntry(path, content.Length, DateTime.UtcNow);
+        _contents[path] = content;
+    }
+
+    // Recursive, matching RealFileSystem: a fake that enumerates less than the real thing hides
+    // exactly the bugs it is supposed to catch.
     public IEnumerable<FileEntry> EnumerateFiles(string directory, string searchPattern) =>
-        _files.Values.Where(f => Path.GetDirectoryName(f.Path) == directory);
+        _files.Values.Where(f =>
+            f.Path.StartsWith(directory.TrimEnd('\\') + "\\", StringComparison.OrdinalIgnoreCase));
+
+    public string? TryReadAllText(string path) =>
+        _contents.TryGetValue(path, out var content) ? content : null;
 
     public bool TryDeleteFile(string path)
     {

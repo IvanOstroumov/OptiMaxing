@@ -44,17 +44,8 @@ public sealed class StartupViewModel : ObservableObject
             return Task.CompletedTask;
         });
 
-        ToggleCommand = new RelayCommand(() =>
-        {
-            Toggle();
-            return Task.CompletedTask;
-        }, () => Selected is not null);
-
-        DeleteCommand = new RelayCommand(() =>
-        {
-            Delete();
-            return Task.CompletedTask;
-        }, () => Selected is not null);
+        ToggleCommand = new RelayCommand(ToggleAsync, () => Selected is not null);
+        DeleteCommand = new RelayCommand(DeleteAsync, () => Selected is not null);
 
         Refresh();
     }
@@ -102,7 +93,7 @@ public sealed class StartupViewModel : ObservableObject
                      (broken > 0 ? $", с отсутствующим файлом: {broken}" : string.Empty);
     }
 
-    private void Toggle()
+    private async Task ToggleAsync()
     {
         if (Selected is not { } row)
         {
@@ -117,11 +108,12 @@ public sealed class StartupViewModel : ObservableObject
             return;
         }
 
-        _startup.SetEnabled(row.Entry, !row.IsEnabled);
+        var result = await _startup.SetEnabledAsync(row.Entry, !row.IsEnabled, CancellationToken.None);
         Refresh();
+        StatusText = result.Message;
     }
 
-    private void Delete()
+    private async Task DeleteAsync()
     {
         if (Selected is not { } row)
         {
@@ -144,11 +136,9 @@ public sealed class StartupViewModel : ObservableObject
             return;
         }
 
-        var deleted = _startup.Delete(row.Entry);
+        var result = await _startup.DeleteAsync(row.Entry, CancellationToken.None);
         Refresh();
-        StatusText = deleted
-            ? $"Удалено: {row.Name}"
-            : $"Не удалось удалить {row.Name} — файл занят другим процессом.";
+        StatusText = result.Message;
     }
 
     private static bool ConfirmCritical(string message) =>

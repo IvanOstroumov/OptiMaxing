@@ -21,4 +21,8 @@ public interface IFileSystem
     /// <summary>Returns false (rather than throwing) if the file could not be
     /// deleted, e.g. because it is in use.</summary>
     bool TryDeleteFile(string path);
+
+    /// <summary>Null when the file is missing, locked, or unreadable. Used to parse scheduled-task
+    /// definitions, where a handful of tasks are always unreadable even when elevated.</summary>
+    string? TryReadAllText(string path);
 }

@@ -25,7 +25,7 @@ internal static class Program
         using var sensors = new LibreHardwareSensorProvider();
         DumpSensors(sensors);
 
-        DumpStartup(new StartupInventoryService(new WindowsRegistryProvider(), new RealFileSystem()));
+        DumpStartup(new StartupInventoryService(new WindowsRegistryProvider(), new RealFileSystem(), new ProcessRunner()));
         DumpProcesses(new ProcessMonitor(new WindowsProcessInspector()));
         DumpServices(new ServiceInventoryService(new WindowsServiceManager()));
         DumpPrograms(new InstalledProgramsService(new WindowsRegistryProvider(), new ProcessRunner()));

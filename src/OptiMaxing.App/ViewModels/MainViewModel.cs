@@ -5,6 +5,7 @@ using OptiMaxing.Core.Engine;
 using OptiMaxing.Core.Model;
 using OptiMaxing.Core.Optimizations;
 using OptiMaxing.Core.Safety;
+using OptiMaxing.Core.Services;
 using OptiMaxing.Core.Startup;
 
 namespace OptiMaxing.App.ViewModels;
@@ -33,6 +34,7 @@ public sealed class MainViewModel : ObservableObject
     public SystemHealthViewModel Health { get; }
     public StartupViewModel Startup { get; }
     public ProcessesViewModel Processes { get; }
+    public ServicesViewModel Services { get; }
 
     public MainViewModel(
         OptimizationCatalog catalog,
@@ -41,10 +43,12 @@ public sealed class MainViewModel : ObservableObject
         SystemHealthService health,
         SensorMonitor sensors,
         StartupInventoryService startup,
-        ProcessMonitor processes)
+        ProcessMonitor processes,
+        ServiceInventoryService services)
     {
         Startup = new StartupViewModel(startup);
         Processes = new ProcessesViewModel(processes);
+        Services = new ServicesViewModel(services);
         _engine = engine;
         _restorePoints = restorePoints;
         Health = new SystemHealthViewModel(health, sensors);

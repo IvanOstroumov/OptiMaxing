@@ -4,6 +4,7 @@ using OptiMaxing.Core.Engine;
 using OptiMaxing.Core.Optimizations;
 using OptiMaxing.Core.Platform;
 using OptiMaxing.Core.Safety;
+using OptiMaxing.Core.Services;
 using OptiMaxing.Core.Startup;
 
 namespace OptiMaxing.App;
@@ -45,7 +46,9 @@ public partial class App : Application
 
         var startup = new StartupInventoryService(registry, fileSystem);
         var processes = new ProcessMonitor(new WindowsProcessInspector());
-        var viewModel = new MainViewModel(catalog, engine, restorePoints, health, sensors, startup, processes);
+        var serviceInventory = new ServiceInventoryService(services);
+        var viewModel = new MainViewModel(
+            catalog, engine, restorePoints, health, sensors, startup, processes, serviceInventory);
         var window = new MainWindow { DataContext = viewModel };
         window.Show();
 

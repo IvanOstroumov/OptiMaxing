@@ -2,6 +2,7 @@ using System.Text;
 using OptiMaxing.Core.Abstractions;
 using OptiMaxing.Core.Platform;
 using OptiMaxing.Core.Safety;
+using OptiMaxing.Core.Services;
 using OptiMaxing.Core.Startup;
 
 namespace OptiMaxing.Diagnostics;
@@ -23,6 +24,23 @@ internal static class Program
 
         DumpStartup(new StartupInventoryService(new WindowsRegistryProvider(), new RealFileSystem()));
         DumpProcesses(new ProcessMonitor(new WindowsProcessInspector()));
+        DumpServices(new ServiceInventoryService(new WindowsServiceManager()));
+    }
+
+    private static void DumpServices(ServiceInventoryService services)
+    {
+        Section("Службы");
+
+        var rows = services.List();
+        Console.WriteLine($"Всего: {rows.Count}, " +
+                          $"критичных: {rows.Count(r => r.Safety == ServiceSafety.Critical)}, " +
+                          $"можно отключить: {rows.Count(r => r.Safety == ServiceSafety.SafeToDisable)}");
+
+        foreach (var row in rows.Where(r => r.Safety == ServiceSafety.SafeToDisable))
+        {
+            var state = row.Info.IsRunning ? "работает" : "остановлена";
+            Console.WriteLine($"  {row.Info.Name,-40} {ServiceInventoryService.Describe(row.Info.StartupType),-24} {state}");
+        }
     }
 
     private static void DumpProcesses(ProcessMonitor monitor)

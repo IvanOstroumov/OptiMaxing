@@ -599,6 +599,123 @@
                 </DockPanel>
             </TabItem>
 
+            <TabItem Header="Службы" DataContext="{Binding Services}">
+                <DockPanel Margin="0,12,0,0">
+                    <DockPanel DockPanel.Dock="Top" Margin="0,0,0,10">
+                        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                            <Button Content="Обновить" Command="{Binding RefreshCommand}" />
+                            <Button Content="{Binding Selected.RunToggleText, FallbackValue='Остановить'}"
+                                    Command="{Binding ToggleRunningCommand}" Margin="8,0,0,0" />
+                            <Button Content="Авто" Command="{Binding AutomaticCommand}" Margin="8,0,0,0" />
+                            <Button Content="Вручную" Command="{Binding ManualCommand}" Margin="8,0,0,0" />
+                            <Button Content="Отключить" Command="{Binding DisableCommand}" Margin="8,0,0,0" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBox Text="{Binding Filter, UpdateSourceTrigger=PropertyChanged}"
+                                     Width="200" VerticalAlignment="Center" />
+                            <CheckBox Content="Только рекомендуемые к отключению"
+                                      IsChecked="{Binding OnlyRecommended}"
+                                      VerticalAlignment="Center" Margin="12,0,0,0" />
+                        </StackPanel>
+                    </DockPanel>
+
+                    <TextBlock DockPanel.Dock="Bottom" Text="{Binding StatusText}"
+                               Style="{StaticResource MutedText}" Margin="0,8,0,0" TextWrapping="Wrap" />
+
+                    <Border Background="{StaticResource PanelBrush}" CornerRadius="8"
+                            BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
+                        <ListBox ItemsSource="{Binding Entries}" SelectedItem="{Binding Selected}"
+                                 Background="Transparent" BorderThickness="0"
+                                 HorizontalContentAlignment="Stretch"
+                                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                 VirtualizingPanel.IsVirtualizing="True"
+                                 VirtualizingPanel.VirtualizationMode="Recycling"
+                                 VirtualizingPanel.ScrollUnit="Pixel">
+                            <ListBox.ItemContainerStyle>
+                                <Style TargetType="ListBoxItem">
+                                    <Setter Property="Padding" Value="0" />
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="ListBoxItem">
+                                                <Grid Margin="4">
+                                                    <Border x:Name="Bg" CornerRadius="6" Background="Transparent"
+                                                            BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,1" />
+                                                    <Border x:Name="Accent" Width="3" HorizontalAlignment="Left"
+                                                            CornerRadius="2" Background="Transparent" Margin="0,2" />
+                                                    <ContentPresenter Margin="12,8" />
+                                                </Grid>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter TargetName="Bg" Property="Background" Value="#1a2433" />
+                                                    </Trigger>
+                                                    <Trigger Property="IsSelected" Value="True">
+                                                        <Setter TargetName="Bg" Property="Background" Value="#1e3a5f" />
+                                                        <Setter TargetName="Accent" Property="Background"
+                                                                Value="{StaticResource AccentBrush}" />
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </ListBox.ItemContainerStyle>
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="180" />
+                                            <ColumnDefinition Width="110" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <StackPanel Grid.Column="0">
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="{Binding DisplayName}" FontWeight="SemiBold" FontSize="14"
+                                                           TextTrimming="CharacterEllipsis" />
+
+                                                <Border CornerRadius="4" Padding="6,1" Margin="8,0,0,0" Background="#3a1e1e"
+                                                        Visibility="{Binding IsCritical, Converter={StaticResource BoolToVisibility}}">
+                                                    <TextBlock Text="критичная" FontSize="11"
+                                                               Foreground="{StaticResource RiskAdvancedBrush}" />
+                                                </Border>
+
+                                                <Border CornerRadius="4" Padding="6,1" Margin="8,0,0,0" Background="#1e3a28"
+                                                        Visibility="{Binding IsSafeToDisable, Converter={StaticResource BoolToVisibility}}">
+                                                    <TextBlock Text="можно отключить" FontSize="11"
+                                                               Foreground="{StaticResource RiskSafeBrush}" />
+                                                </Border>
+                                            </StackPanel>
+
+                                            <TextBlock Text="{Binding Name}" Style="{StaticResource MutedText}"
+                                                       FontFamily="Consolas" FontSize="11" Margin="0,2,0,0" />
+                                            <TextBlock Text="{Binding Note}" Style="{StaticResource MutedText}"
+                                                       TextWrapping="Wrap" Margin="0,3,0,0"
+                                                       Visibility="{Binding HasNote, Converter={StaticResource BoolToVisibility}}" />
+                                        </StackPanel>
+
+                                        <TextBlock Grid.Column="1" Text="{Binding StartupText}" VerticalAlignment="Center"
+                                                   HorizontalAlignment="Right" Style="{StaticResource MutedText}" />
+                                        <TextBlock Grid.Column="2" Text="{Binding StateText}" VerticalAlignment="Center"
+                                                   HorizontalAlignment="Right" FontSize="12">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                                                    <Setter Property="Foreground" Value="{StaticResource AccentBrush}" />
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsRunning}" Value="False">
+                                                            <Setter Property="Foreground" Value="{StaticResource MutedTextBrush}" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                    </Grid>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </Border>
+                </DockPanel>
+            </TabItem>
+
             <TabItem Header="Инструменты и советы" DataContext="{Binding Advisory}">
                 <ScrollViewer Margin="0,12,0,0" VerticalScrollBarVisibility="Auto">
                     <StackPanel>

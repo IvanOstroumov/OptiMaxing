@@ -19,6 +19,11 @@
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
     <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
     <SatelliteResourceLanguages>en;ru</SatelliteResourceLanguages>
+
+    <!-- installer/OptiMaxing.iss reads the exe from repo-root publish/; without this,
+         dotnet publish's default bin/.../publish/ output silently diverges from what
+         the installer ships, so a stale copy there gets packaged instead. -->
+    <PublishDir>$(MSBuildThisFileDirectory)..\..\publish\</PublishDir>
   </PropertyGroup>
 
   <ItemGroup>

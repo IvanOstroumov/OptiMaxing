@@ -1,5 +1,6 @@
 using System.Windows;
 using OptiMaxing.App.ViewModels;
+using OptiMaxing.Core.Crashes;
 using OptiMaxing.Core.Engine;
 using OptiMaxing.Core.Optimizations;
 using OptiMaxing.Core.Platform;
@@ -51,8 +52,10 @@ public partial class App : Application
         var processes = new ProcessMonitor(new WindowsProcessInspector());
         var serviceInventory = new ServiceInventoryService(services);
         var programs = new InstalledProgramsService(registry, processRunner);
+        var crashHistory = new CrashHistoryService(new RealEventLogProvider());
         var viewModel = new MainViewModel(
-            catalog, engine, restorePoints, health, sensors, startup, processes, serviceInventory, programs);
+            catalog, engine, restorePoints, health, sensors, startup, processes, serviceInventory, programs,
+            crashHistory);
         var window = new MainWindow { DataContext = viewModel };
         window.Show();
 

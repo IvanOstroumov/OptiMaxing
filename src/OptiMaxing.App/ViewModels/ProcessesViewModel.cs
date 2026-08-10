@@ -12,7 +12,16 @@ public sealed record SortOption<T>(T Value, string Label);
 
 public sealed class ProcessRow(ProcessSample sample) : ObservableObject
 {
+    // Advisory-only heuristic: sustained high CPU on a single process for ~45 consecutive
+    // 1-second polls is the kind of pattern a background miner or runaway task shows, but so
+    // does a video export or a compile — this is a hint for the user to look closer, never an
+    // automatic kill.
+    private const double HighCpuThreshold = 50.0;
+    private const int SustainedSampleThreshold = 45;
+
     private bool _isChecked;
+    private int _sustainedHighCpuSamples;
+    private bool _isSuspiciousLoad;
 
     public ProcessSample Sample { get; private set; } = sample;
 
@@ -35,6 +44,15 @@ public sealed class ProcessRow(ProcessSample sample) : ObservableObject
     public string ThreadsText => $"{Sample.Process.ThreadCount} пот.";
     public string PriorityText => Sample.Process.Priority?.ToString() ?? "—";
 
+    /// <summary>Advisory-only badge: this process has stayed above <see cref="HighCpuThreshold"/>% CPU
+    /// for ~45 consecutive polls (about 45 seconds). A hint to look closer — could be a background
+    /// miner, could just be a legitimate compile/render job. Never triggers any automatic action.</summary>
+    public bool IsSuspiciousLoad
+    {
+        get => _isSuspiciousLoad;
+        private set => SetField(ref _isSuspiciousLoad, value);
+    }
+
     public void Update(ProcessSample updated)
     {
         Sample = updated;
@@ -43,6 +61,17 @@ public sealed class ProcessRow(ProcessSample sample) : ObservableObject
         OnPropertyChanged(nameof(ThreadsText));
         OnPropertyChanged(nameof(PriorityText));
         OnPropertyChanged(nameof(IsHung));
+
+        if (!IsCritical && updated.CpuPercent is { } cpu && cpu >= HighCpuThreshold)
+        {
+            _sustainedHighCpuSamples++;
+        }
+        else
+        {
+            _sustainedHighCpuSamples = 0;
+        }
+
+        IsSuspiciousLoad = _sustainedHighCpuSamples >= SustainedSampleThreshold;
     }
 }
 

@@ -3,6 +3,7 @@ using System.IO;
 using System.Text.Json;
 using System.Windows;
 using Microsoft.Win32;
+using OptiMaxing.Core.Crashes;
 using OptiMaxing.Core.Engine;
 using OptiMaxing.Core.Model;
 using OptiMaxing.Core.Optimizations;
@@ -40,6 +41,7 @@ public sealed class MainViewModel : ObservableObject
     public ProcessesViewModel Processes { get; }
     public ServicesViewModel Services { get; }
     public ProgramsViewModel Programs { get; }
+    public CrashHistoryViewModel CrashHistory { get; }
 
     public MainViewModel(
         OptimizationCatalog catalog,
@@ -50,12 +52,14 @@ public sealed class MainViewModel : ObservableObject
         StartupInventoryService startup,
         ProcessMonitor processes,
         ServiceInventoryService services,
-        InstalledProgramsService programs)
+        InstalledProgramsService programs,
+        CrashHistoryService crashHistory)
     {
         Programs = new ProgramsViewModel(programs);
         Startup = new StartupViewModel(startup);
         Processes = new ProcessesViewModel(processes);
         Services = new ServicesViewModel(services);
+        CrashHistory = new CrashHistoryViewModel(crashHistory);
         _engine = engine;
         _restorePoints = restorePoints;
         Health = new SystemHealthViewModel(health, sensors);

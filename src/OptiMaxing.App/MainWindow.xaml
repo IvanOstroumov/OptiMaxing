@@ -656,6 +656,13 @@
                                                     <TextBlock Text="не отвечает" FontSize="11"
                                                                Foreground="{DynamicResource RiskCautionBrush}" />
                                                 </Border>
+
+                                                <Border CornerRadius="4" Padding="6,1" Margin="6,0,0,0" Background="#3a2a1e"
+                                                        Visibility="{Binding IsSuspiciousLoad, Converter={StaticResource BoolToVisibility}}"
+                                                        ToolTip="Длительная высокая нагрузка на CPU — не обязательно майнер, может быть обычная тяжёлая задача. Реши сам, стоит ли завершать процесс.">
+                                                    <TextBlock Text="подозрительная нагрузка" FontSize="11"
+                                                               Foreground="{DynamicResource RiskCautionBrush}" />
+                                                </Border>
                                             </StackPanel>
                                             <TextBlock Text="{Binding Path}" Style="{StaticResource MutedText}"
                                                        FontFamily="Consolas" FontSize="11" Margin="0,2,0,0"
@@ -972,6 +979,42 @@
                         </ItemsControl>
                     </StackPanel>
                 </ScrollViewer>
+            </TabItem>
+
+            <TabItem Header="Сбои (BSOD)" DataContext="{Binding CrashHistory}">
+                <DockPanel Margin="0,12,0,0">
+                    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,10">
+                        <Button Content="Обновить" Command="{Binding RefreshCommand}" />
+                        <TextBlock Text="Последние 90 дней: синие экраны и неожиданные выключения из журнала событий Windows."
+                                   Style="{StaticResource MutedText}" VerticalAlignment="Center" Margin="12,0,0,0" />
+                    </StackPanel>
+
+                    <TextBlock DockPanel.Dock="Bottom" Text="{Binding StatusText}"
+                               Style="{StaticResource MutedText}" Margin="0,8,0,0" />
+
+                    <Border Background="{DynamicResource PanelBrush}" CornerRadius="8"
+                            BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
+                        <ListBox ItemsSource="{Binding Entries}" Background="Transparent" BorderThickness="0"
+                                 HorizontalContentAlignment="Stretch">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Padding="12,10" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1">
+                                        <StackPanel>
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="{Binding TimestampText}" FontFamily="Consolas" FontWeight="SemiBold" />
+                                                <Border CornerRadius="4" Padding="6,1" Margin="10,0,0,0" Background="#3a1e1e">
+                                                    <TextBlock Text="{Binding KindText}" FontSize="11"
+                                                               Foreground="{DynamicResource RiskAdvancedBrush}" />
+                                                </Border>
+                                            </StackPanel>
+                                            <TextBlock Text="{Binding Summary}" Margin="0,4,0,0" TextWrapping="Wrap" />
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </Border>
+                </DockPanel>
             </TabItem>
         </TabControl>
     </Grid>

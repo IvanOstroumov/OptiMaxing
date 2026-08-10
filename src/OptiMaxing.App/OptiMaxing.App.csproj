@@ -11,7 +11,7 @@
     <SelfContained>true</SelfContained>
     <AssemblyName>OptiMaxing</AssemblyName>
     <ApplicationManifest>app.manifest</ApplicationManifest>
-    <ApplicationIcon></ApplicationIcon>
+    <ApplicationIcon>Resources\app.ico</ApplicationIcon>
 
     <!-- WPF single-file publishing requires native libs to be extracted at runtime;
          without this the exe fails to start. Verified by publish spike. -->

@@ -349,6 +349,22 @@
                                                                Text="{Binding TradeOff, StringFormat='Цена: {0}'}"
                                                                Visibility="{Binding TradeOff, Converter={StaticResource TextToVisibility}}" />
 
+                                                    <StackPanel Margin="0,8,0,0"
+                                                                Visibility="{Binding HasChoices, Converter={StaticResource BoolToVisibility}}">
+                                                        <ComboBox ItemsSource="{Binding Choices}"
+                                                                  SelectedItem="{Binding SelectedChoice}"
+                                                                  DisplayMemberPath="DisplayName"
+                                                                  HorizontalAlignment="Left" MinWidth="360" />
+
+                                                        <TextBlock Text="{Binding SelectedChoice.Description}"
+                                                                   Style="{StaticResource MutedText}"
+                                                                   TextWrapping="Wrap" Margin="0,4,0,0" />
+
+                                                        <TextBlock Text="{Binding CurrentValueText}" FontSize="11"
+                                                                   Margin="0,4,0,0" FontFamily="Consolas"
+                                                                   Foreground="{StaticResource AccentBrush}" />
+                                                    </StackPanel>
+
                                                     <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
                                                         <TextBlock Text="{Binding StateText}" FontSize="11"
                                                                    Foreground="{StaticResource AccentBrush}" />

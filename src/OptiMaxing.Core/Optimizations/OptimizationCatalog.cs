@@ -54,6 +54,14 @@ public sealed class OptimizationCatalog(
 
             // Advanced
             new VbsMemoryIntegrityDisable(registry),
+
+            // Tweaks with a value to pick rather than a switch to flip.
+            new Win32PrioritySeparationChoice(registry),
+            new SystemResponsivenessChoice(registry),
+            new GamesSchedulingPriorityChoice(registry),
+            new NetworkThrottlingIndexChoice(registry),
+            new TdrDelayChoice(registry),
+            new MenuShowDelayChoice(registry),
         ];
 
         // Bloatware removal: one optimization per curated whitelist entry.

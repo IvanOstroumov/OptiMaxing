@@ -1,6 +1,8 @@
 using System.Text;
 using OptiMaxing.Core.Abstractions;
 using OptiMaxing.Core.Platform;
+using OptiMaxing.Core.Model;
+using OptiMaxing.Core.Optimizations;
 using OptiMaxing.Core.Programs;
 using OptiMaxing.Core.Safety;
 using OptiMaxing.Core.Services;
@@ -27,6 +29,27 @@ internal static class Program
         DumpProcesses(new ProcessMonitor(new WindowsProcessInspector()));
         DumpServices(new ServiceInventoryService(new WindowsServiceManager()));
         DumpPrograms(new InstalledProgramsService(new WindowsRegistryProvider(), new ProcessRunner()));
+        DumpChoiceTweaks(new WindowsRegistryProvider());
+    }
+
+    private static void DumpChoiceTweaks(IRegistryProvider registry)
+    {
+        Section("Твики со значением");
+
+        var catalog = new OptimizationCatalog(
+            registry, new WindowsServiceManager(), new ProcessRunner(), new RealFileSystem());
+
+        foreach (var tweak in catalog.BuildAll().OfType<IChoiceOptimization>())
+        {
+            var raw = tweak.DescribeCurrentAsync(CancellationToken.None).GetAwaiter().GetResult();
+            var known = tweak.GetCurrentChoiceAsync(CancellationToken.None).GetAwaiter().GetResult();
+
+            Console.WriteLine();
+            Console.WriteLine($"{tweak.DisplayName}");
+            Console.WriteLine($"  сейчас в системе: {raw}" +
+                              (known is null ? "  [значение задано не нами]" : $"  ({known.DisplayName})"));
+            Console.WriteLine($"  вариантов: {tweak.Choices.Count}, по умолчанию выбран: {tweak.SelectedChoiceId}");
+        }
     }
 
     private static void DumpPrograms(InstalledProgramsService programs)

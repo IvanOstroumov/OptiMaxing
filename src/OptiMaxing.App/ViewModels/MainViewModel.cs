@@ -221,6 +221,14 @@ public sealed class MainViewModel : ObservableObject
             });
 
             await _engine.ScanStatesAsync(_all.Select(o => o.Model).ToList(), progress, CancellationToken.None);
+
+            // Choice tweaks additionally show the raw system value, which the engine's state scan
+            // does not carry.
+            foreach (var item in _all.Where(o => o.HasChoices))
+            {
+                await item.RefreshCurrentValueAsync();
+            }
+
             StatusText = $"Проверено пунктов: {_all.Count}";
         }
         finally

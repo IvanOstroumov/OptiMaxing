@@ -11,7 +11,8 @@ public class SystemHealthServiceTests
         var sysInfo = new FakeSystemInfoProvider();
         var restorePoints = new FakeRestorePointService();
         var hardware = new FakeHardwareInventoryProvider();
-        return (new SystemHealthService(sysInfo, restorePoints, hardware), sysInfo, restorePoints, hardware);
+        var security = new InMemorySecurityStatusProvider();
+        return (new SystemHealthService(sysInfo, restorePoints, hardware, security), sysInfo, restorePoints, hardware);
     }
 
     [Fact]

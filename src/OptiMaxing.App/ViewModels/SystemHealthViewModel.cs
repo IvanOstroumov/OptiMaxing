@@ -4,6 +4,21 @@ using OptiMaxing.Core.Safety;
 
 namespace OptiMaxing.App.ViewModels;
 
+/// <summary>One line in the "Безопасность" block: a subsystem name and its state, with a flag the
+/// view uses to color anything that is off red.</summary>
+public sealed record SecurityRow(string Name, string ValueText, bool IsConcern)
+{
+    public static SecurityRow From(string name, ProtectionState state, string? detail = null) => new(
+        name,
+        state switch
+        {
+            ProtectionState.On => detail is null ? "включено" : $"включено ({detail})",
+            ProtectionState.Off => "выключено",
+            _ => "не удалось определить",
+        },
+        state == ProtectionState.Off);
+}
+
 /// <summary>One row for a fixed drive in the health screen, with a pre-formatted string and a
 /// bool flag the view uses to color low-space drives.</summary>
 public sealed class DiskHealthRow(DiskInfo disk)
@@ -85,6 +100,7 @@ public sealed class SystemHealthViewModel : ObservableObject
     public ObservableCollection<string> Warnings { get; } = [];
     public ObservableCollection<string> HardwareFacts { get; } = [];
     public ObservableCollection<SensorGroupRow> SensorGroups { get; } = [];
+    public ObservableCollection<SecurityRow> SecurityRows { get; } = [];
 
     private bool _isActive;
 
@@ -218,6 +234,17 @@ public sealed class SystemHealthViewModel : ObservableObject
         HardwareFacts.Clear();
         foreach (var fact in DescribeHardware(report.Hardware))
             HardwareFacts.Add(fact);
+
+        SecurityRows.Clear();
+        SecurityRows.Add(SecurityRow.From("Антивирус", report.Security.Antivirus, report.Security.AntivirusName));
+        SecurityRows.Add(SecurityRow.From("Брандмауэр", report.Security.Firewall));
+        SecurityRows.Add(SecurityRow.From("Контроль учётных записей (UAC)", report.Security.UacEnabled));
+        SecurityRows.Add(SecurityRow.From("Безопасная загрузка (Secure Boot)", report.Security.SecureBoot));
+        SecurityRows.Add(SecurityRow.From("Шифрование диска (BitLocker)", report.Security.BitLockerSystemDrive));
+        SecurityRows.Add(new SecurityRow(
+            "Запуск от имени администратора",
+            report.Security.IsAdministrator ? "да" : "нет",
+            false));
 
         OnPropertyChanged(nameof(HasWarnings));
     }

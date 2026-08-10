@@ -21,6 +21,7 @@ internal static class Program
 
         DumpSystemInfo(new WindowsSystemInfoProvider());
         DumpHardware(new WmiHardwareInventoryProvider());
+        DumpSecurity(new WindowsSecurityStatusProvider());
 
         using var sensors = new LibreHardwareSensorProvider();
         DumpSensors(sensors);
@@ -226,6 +227,20 @@ internal static class Program
         {
             Console.WriteLine($"{disk.Name,-6} {Gb((ulong)disk.TotalBytes),10} всего, {Gb((ulong)disk.FreeBytes),10} свободно ({disk.FreePercent:F1}%)");
         }
+    }
+
+    private static void DumpSecurity(ISecurityStatusProvider provider)
+    {
+        Section("Безопасность");
+
+        var s = provider.Collect();
+        Console.WriteLine($"Антивирус     : {s.Antivirus} ({s.AntivirusName ?? "не определён"})");
+        Console.WriteLine($"Брандмауэр    : {s.Firewall}");
+        Console.WriteLine($"UAC           : {s.UacEnabled}");
+        Console.WriteLine($"Secure Boot   : {s.SecureBoot}");
+        Console.WriteLine($"BitLocker (C:): {s.BitLockerSystemDrive}" +
+                          (IsElevated() ? string.Empty : "  [нужны права администратора]"));
+        Console.WriteLine($"Запущено от администратора: {(s.IsAdministrator ? "да" : "нет")}");
     }
 
     private static void DumpHardware(IHardwareInventoryProvider provider)

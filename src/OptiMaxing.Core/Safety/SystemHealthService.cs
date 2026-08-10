@@ -12,7 +12,8 @@ public sealed record SystemHealthReport(
     IReadOnlyList<DiskInfo> Disks,
     RestorePointStatus RestorePoint,
     IReadOnlyList<HealthWarning> Warnings,
-    HardwareInventory Hardware)
+    HardwareInventory Hardware,
+    SecurityStatus Security)
 {
     public double MemoryUsedPercent => Memory.TotalBytes == 0
         ? 0
@@ -25,7 +26,8 @@ public sealed record SystemHealthReport(
 public sealed class SystemHealthService(
     ISystemInfoProvider systemInfo,
     IRestorePointService restorePoints,
-    IHardwareInventoryProvider hardware)
+    IHardwareInventoryProvider hardware,
+    ISecurityStatusProvider security)
 {
     private const double LowDiskFreePercentThreshold = 10.0;
     private const double HighMemoryUsedPercentThreshold = 90.0;
@@ -37,8 +39,20 @@ public sealed class SystemHealthService(
         var disks = systemInfo.GetFixedDrives();
         var restorePointStatus = restorePoints.GetStatus();
         var inventory = hardware.Collect();
+        var securityStatus = security.Collect();
 
         var warnings = new List<HealthWarning>();
+
+        if (securityStatus.Antivirus == ProtectionState.Off)
+            warnings.Add(new HealthWarning(
+                "Антивирус выключен или не обнаружен — прежде чем что-либо ещё, стоит включить защиту."));
+
+        if (securityStatus.Firewall == ProtectionState.Off)
+            warnings.Add(new HealthWarning("Брандмауэр выключен или не обнаружен."));
+
+        if (securityStatus.UacEnabled == ProtectionState.Off)
+            warnings.Add(new HealthWarning(
+                "Контроль учётных записей (UAC) выключен — любая программа сможет менять систему без запроса."));
 
         var memoryUsedPercent = memory.TotalBytes == 0
             ? 0
@@ -68,7 +82,8 @@ public sealed class SystemHealthService(
             disks,
             restorePointStatus,
             warnings,
-            inventory);
+            inventory,
+            securityStatus);
     }
 
     /// <summary>Turns raw inventory into the handful of conclusions worth acting on. Deliberately

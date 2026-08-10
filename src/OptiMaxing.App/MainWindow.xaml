@@ -87,6 +87,40 @@
                                 BorderBrush="{StaticResource BorderBrush}" BorderThickness="1"
                                 Padding="14,10" Margin="0,0,0,10">
                             <StackPanel>
+                                <TextBlock Text="Безопасность" FontWeight="SemiBold" Margin="0,0,0,6" />
+                                <ItemsControl ItemsSource="{Binding SecurityRows}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid Margin="0,2">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Grid.Column="0" Text="{Binding Name}" Style="{StaticResource MutedText}" />
+                                                <TextBlock Grid.Column="1" Text="{Binding ValueText}">
+                                                    <TextBlock.Style>
+                                                        <Style TargetType="TextBlock">
+                                                            <Setter Property="Foreground" Value="{StaticResource MutedTextBrush}" />
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding IsConcern}" Value="True">
+                                                                    <Setter Property="Foreground" Value="{StaticResource RiskCautionBrush}" />
+                                                                    <Setter Property="FontWeight" Value="SemiBold" />
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </TextBlock.Style>
+                                                </TextBlock>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Background="{StaticResource PanelBrush}" CornerRadius="8"
+                                BorderBrush="{StaticResource BorderBrush}" BorderThickness="1"
+                                Padding="14,10" Margin="0,0,0,10">
+                            <StackPanel>
                                 <TextBlock Text="Оперативная память" FontWeight="SemiBold" Margin="0,0,0,6" />
                                 <ProgressBar Height="6" Minimum="0" Maximum="100" Value="{Binding MemoryUsedPercent, Mode=OneWay}"
                                              Foreground="{StaticResource AccentBrush}" Background="#0f1622" BorderThickness="0" />

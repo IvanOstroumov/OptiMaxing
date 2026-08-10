@@ -40,7 +40,7 @@ public partial class App : Application
         var catalog = new OptimizationCatalog(registry, services, processRunner, fileSystem);
         var systemInfo = new WindowsSystemInfoProvider();
         var hardware = new WmiHardwareInventoryProvider();
-        var health = new SystemHealthService(systemInfo, restorePoints, hardware);
+        var health = new SystemHealthService(systemInfo, restorePoints, hardware, new WindowsSecurityStatusProvider());
         var sensors = new SensorMonitor(new LibreHardwareSensorProvider());
 
         logger.Write(LogLevel.Info, "OptiMaxing started.");

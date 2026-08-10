@@ -5,6 +5,7 @@ using System.Windows;
 using Microsoft.Win32;
 using OptiMaxing.Core.Crashes;
 using OptiMaxing.Core.Engine;
+using OptiMaxing.Core.Files;
 using OptiMaxing.Core.Model;
 using OptiMaxing.Core.Optimizations;
 using OptiMaxing.Core.Optimizations.Catalog;
@@ -42,6 +43,7 @@ public sealed class MainViewModel : ObservableObject
     public ServicesViewModel Services { get; }
     public ProgramsViewModel Programs { get; }
     public CrashHistoryViewModel CrashHistory { get; }
+    public FileFinderViewModel FileFinder { get; }
 
     public MainViewModel(
         OptimizationCatalog catalog,
@@ -53,13 +55,15 @@ public sealed class MainViewModel : ObservableObject
         ProcessMonitor processes,
         ServiceInventoryService services,
         InstalledProgramsService programs,
-        CrashHistoryService crashHistory)
+        CrashHistoryService crashHistory,
+        FileFinderService fileFinder)
     {
         Programs = new ProgramsViewModel(programs);
         Startup = new StartupViewModel(startup);
         Processes = new ProcessesViewModel(processes);
         Services = new ServicesViewModel(services);
         CrashHistory = new CrashHistoryViewModel(crashHistory);
+        FileFinder = new FileFinderViewModel(fileFinder);
         _engine = engine;
         _restorePoints = restorePoints;
         Health = new SystemHealthViewModel(health, sensors);

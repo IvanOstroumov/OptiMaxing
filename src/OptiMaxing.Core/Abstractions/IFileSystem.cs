@@ -25,4 +25,9 @@ public interface IFileSystem
     /// <summary>Null when the file is missing, locked, or unreadable. Used to parse scheduled-task
     /// definitions, where a handful of tasks are always unreadable even when elevated.</summary>
     string? TryReadAllText(string path);
+
+    /// <summary>SHA-256 of the file contents as an uppercase hex string, or null if the file could
+    /// not be read (locked, deleted mid-scan, access denied). Used to confirm duplicate-size
+    /// candidates are actually byte-identical.</summary>
+    string? TryComputeFileHash(string path);
 }

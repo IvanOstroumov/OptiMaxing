@@ -48,3 +48,32 @@ public sealed class RelayCommand(Func<Task> execute, Func<bool>? canExecute = nu
     public void RaiseCanExecuteChanged() =>
         CanExecuteChanged?.Invoke(this, EventArgs.Empty);
 }
+
+/// <summary>Like <see cref="RelayCommand"/> but carries a typed parameter, for per-item commands
+/// (e.g. a treemap rectangle's drill-in) bound via CommandParameter="{Binding}".</summary>
+public sealed class RelayCommand<T>(Func<T?, Task> execute, Func<T?, bool>? canExecute = null) : ICommand
+{
+    private bool _running;
+
+    public event EventHandler? CanExecuteChanged;
+
+    public bool CanExecute(object? parameter) => !_running && (canExecute?.Invoke((T?)parameter) ?? true);
+
+    public async void Execute(object? parameter)
+    {
+        _running = true;
+        RaiseCanExecuteChanged();
+        try
+        {
+            await execute((T?)parameter);
+        }
+        finally
+        {
+            _running = false;
+            RaiseCanExecuteChanged();
+        }
+    }
+
+    public void RaiseCanExecuteChanged() =>
+        CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+}

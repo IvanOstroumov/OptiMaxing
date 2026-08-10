@@ -1,3 +1,4 @@
+using System.Security.Cryptography;
 using OptiMaxing.Core.Abstractions;
 
 namespace OptiMaxing.Core.Platform;
@@ -86,6 +87,20 @@ public sealed class RealFileSystem : IFileSystem
         catch (Exception ex) when (ex is UnauthorizedAccessException or IOException)
         {
             return false;
+        }
+    }
+
+    public string? TryComputeFileHash(string path)
+    {
+        try
+        {
+            using var stream = File.OpenRead(path);
+            using var sha = SHA256.Create();
+            return Convert.ToHexString(sha.ComputeHash(stream));
+        }
+        catch (Exception ex) when (ex is UnauthorizedAccessException or IOException)
+        {
+            return null;
         }
     }
 }

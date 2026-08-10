@@ -2,6 +2,7 @@ using System.Windows;
 using OptiMaxing.App.ViewModels;
 using OptiMaxing.Core.Crashes;
 using OptiMaxing.Core.Engine;
+using OptiMaxing.Core.Files;
 using OptiMaxing.Core.Optimizations;
 using OptiMaxing.Core.Platform;
 using OptiMaxing.Core.Programs;
@@ -53,9 +54,10 @@ public partial class App : Application
         var serviceInventory = new ServiceInventoryService(services);
         var programs = new InstalledProgramsService(registry, processRunner);
         var crashHistory = new CrashHistoryService(new RealEventLogProvider());
+        var fileFinder = new FileFinderService(fileSystem);
         var viewModel = new MainViewModel(
             catalog, engine, restorePoints, health, sensors, startup, processes, serviceInventory, programs,
-            crashHistory);
+            crashHistory, fileFinder);
         var window = new MainWindow { DataContext = viewModel };
         window.Show();
 

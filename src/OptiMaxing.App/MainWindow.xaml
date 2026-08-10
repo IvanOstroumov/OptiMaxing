@@ -1016,6 +1016,72 @@
                     </Border>
                 </DockPanel>
             </TabItem>
+
+            <TabItem Header="Поиск файлов" DataContext="{Binding FileFinder}">
+                <DockPanel Margin="0,12,0,0">
+                    <StackPanel DockPanel.Dock="Top" Margin="0,0,0,10">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBox Text="{Binding RootPath, UpdateSourceTrigger=PropertyChanged}"
+                                     Width="360" VerticalAlignment="Center" />
+                            <Button Content="Диск C:\" Command="{Binding SetRootDriveCCommand}" Margin="8,0,0,0" />
+                            <Button Content="Загрузки" Command="{Binding SetRootDownloadsCommand}" Margin="8,0,0,0" />
+                            <Button Content="Документы" Command="{Binding SetRootDocumentsCommand}" Margin="8,0,0,0" />
+                            <TextBlock Text="Старше, лет:" VerticalAlignment="Center" Margin="16,0,0,0" />
+                            <TextBox Text="{Binding MinAgeYears, UpdateSourceTrigger=PropertyChanged}"
+                                     Width="40" VerticalAlignment="Center" Margin="6,0,0,0" />
+                            <Button Content="Сканировать" Command="{Binding ScanCommand}" Margin="16,0,0,0" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                            <ComboBox ItemsSource="{Binding Modes}" SelectedValue="{Binding Mode}"
+                                      SelectedValuePath="Value" DisplayMemberPath="Label" Width="220" />
+                            <Button Content="Удалить отмеченные" Command="{Binding DeleteSelectedCommand}" Margin="12,0,0,0" />
+                        </StackPanel>
+                    </StackPanel>
+
+                    <TextBlock DockPanel.Dock="Bottom" Text="{Binding StatusText}"
+                               Style="{StaticResource MutedText}" Margin="0,8,0,0" />
+
+                    <Border Background="{DynamicResource PanelBrush}" CornerRadius="8"
+                            BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
+                        <ListBox ItemsSource="{Binding Visible}" Background="Transparent" BorderThickness="0"
+                                 HorizontalContentAlignment="Stretch">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Margin="4">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="90" />
+                                            <ColumnDefinition Width="90" />
+                                            <ColumnDefinition Width="90" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <CheckBox Grid.Column="0" IsChecked="{Binding IsChecked}"
+                                                  VerticalAlignment="Center" Margin="0,0,10,0" />
+
+                                        <StackPanel Grid.Column="1">
+                                            <TextBlock Text="{Binding Name}" FontWeight="SemiBold" />
+                                            <TextBlock Text="{Binding Folder}" Style="{StaticResource MutedText}"
+                                                       FontFamily="Consolas" FontSize="11" TextTrimming="CharacterEllipsis" />
+                                        </StackPanel>
+
+                                        <TextBlock Grid.Column="2" Text="{Binding SizeText}" VerticalAlignment="Center"
+                                                   HorizontalAlignment="Right" FontFamily="Consolas" />
+                                        <TextBlock Grid.Column="3" Text="{Binding DateText}" VerticalAlignment="Center"
+                                                   HorizontalAlignment="Right" Style="{StaticResource MutedText}" />
+                                        <TextBlock Grid.Column="4" Text="{Binding Note}" VerticalAlignment="Center"
+                                                   HorizontalAlignment="Right" Style="{StaticResource MutedText}" />
+                                        <Button Grid.Column="5" Content="Открыть папку" Margin="10,0,0,0"
+                                                Command="{Binding RelativeSource={RelativeSource AncestorType=ItemsControl}, Path=DataContext.OpenFolderCommand}"
+                                                CommandParameter="{Binding}" />
+                                    </Grid>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </Border>
+                </DockPanel>
+            </TabItem>
         </TabControl>
     </Grid>
 </Window>

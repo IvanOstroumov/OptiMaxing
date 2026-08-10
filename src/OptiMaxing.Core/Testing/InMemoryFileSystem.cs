@@ -1,3 +1,5 @@
+using System.Security.Cryptography;
+using System.Text;
 using OptiMaxing.Core.Abstractions;
 
 namespace OptiMaxing.Core.Testing;
@@ -9,6 +11,7 @@ public sealed class InMemoryFileSystem : IFileSystem
     private readonly HashSet<string> _directories = new(StringComparer.OrdinalIgnoreCase);
     private readonly HashSet<string> _lockedFiles = new(StringComparer.OrdinalIgnoreCase);
     private readonly Dictionary<string, string> _contents = new(StringComparer.OrdinalIgnoreCase);
+    private readonly Dictionary<string, string> _hashes = new(StringComparer.OrdinalIgnoreCase);
 
     public void SeedDirectory(string path) => _directories.Add(path);
 
@@ -21,6 +24,10 @@ public sealed class InMemoryFileSystem : IFileSystem
 
     public void LockFile(string directory, string fileName) =>
         _lockedFiles.Add(Path.Combine(directory, fileName));
+
+    /// <summary>Explicitly pins the hash a seeded file reports, so duplicate-detection tests can
+    /// make two same-size files collide (or not) without relying on real byte content.</summary>
+    public void SeedHash(string path, string hash) => _hashes[path] = hash;
 
     public bool DirectoryExists(string path) => _directories.Contains(path);
 
@@ -57,5 +64,19 @@ public sealed class InMemoryFileSystem : IFileSystem
             return false;
 
         return _files.Remove(path);
+    }
+
+    public string? TryComputeFileHash(string path)
+    {
+        if (_lockedFiles.Contains(path) || !_files.ContainsKey(path))
+            return null;
+
+        if (_hashes.TryGetValue(path, out var pinned))
+            return pinned;
+
+        // No explicit content/hash seeded: hash the path itself so distinct fake files never
+        // spuriously collide as duplicates purely because a test forgot to seed content.
+        var source = _contents.TryGetValue(path, out var content) ? content : path;
+        return Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(source)));
     }
 }

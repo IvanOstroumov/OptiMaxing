@@ -60,10 +60,24 @@ public sealed class NtfsLastAccessDisable(IProcessRunner processRunner) : IOptim
         if (!result.Succeeded)
             return null;
 
-        // Output is a locale-dependent sentence, but always ends with the numeric
-        // state ("... = 1" / "... = 0" / "... DISABLE (2)" depending on build) —
-        // pull the last digit run rather than matching any word.
-        var match = System.Text.RegularExpressions.Regex.Match(result.StandardOutput, @"(\d+)\D*$");
-        return match.Success ? int.Parse(match.Groups[1].Value) : null;
+        // Output is a locale-dependent sentence that always contains the numeric state
+        // ("... = 1" / "... = 0" / "... DISABLE (2)" depending on build), so the last number wins
+        // rather than any particular word.
+        //
+        // The class is spelled [0-9] on purpose: \d in .NET also matches Devanagari, Arabic-Indic
+        // and other digit scripts, and a Russian-locale fsutil decoded through the wrong code page
+        // produced exactly such a character here — int.Parse then threw and took the whole scan
+        // down with it.
+        var matches = System.Text.RegularExpressions.Regex.Matches(result.StandardOutput, "[0-9]+");
+        if (matches.Count == 0)
+            return null;
+
+        return int.TryParse(
+            matches[^1].Value,
+            System.Globalization.NumberStyles.Integer,
+            System.Globalization.CultureInfo.InvariantCulture,
+            out var value)
+            ? value
+            : null;
     }
 }

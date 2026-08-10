@@ -64,6 +64,9 @@ public sealed class OptimizationCatalog(
             new MenuShowDelayChoice(registry),
         ];
 
+        // The data-described bulk of the list: pure registry writes with no behaviour of their own.
+        all.AddRange(ExtraTweaksCatalog.Build(registry));
+
         // Bloatware removal: one optimization per curated whitelist entry.
         all.AddRange(BloatwareCatalog.Entries.Select(app => new AppxBloatwareRemove(processRunner, app)));
 

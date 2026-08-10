@@ -30,6 +30,36 @@ internal static class Program
         DumpServices(new ServiceInventoryService(new WindowsServiceManager()));
         DumpPrograms(new InstalledProgramsService(new WindowsRegistryProvider(), new ProcessRunner()));
         DumpChoiceTweaks(new WindowsRegistryProvider());
+        DumpTweakStates(new WindowsRegistryProvider());
+    }
+
+    /// <summary>Answers "what does the machine already have set", which is the whole point of the
+    /// state scan: a tweak this app never applied can still be applied by Windows, by a driver
+    /// installer, or by another tuning tool.</summary>
+    private static void DumpTweakStates(IRegistryProvider registry)
+    {
+        Section("Состояние твиков на этой машине");
+
+        var catalog = new OptimizationCatalog(
+            registry, new WindowsServiceManager(), new ProcessRunner(), new RealFileSystem());
+
+        var all = catalog.BuildAll().Where(o => o is not IChoiceOptimization).ToList();
+        var states = all
+            .Select(o => (Tweak: o, State: Probe(o)))
+            .ToList();
+
+        Console.WriteLine($"Всего пунктов: {all.Count}");
+        foreach (var group in states.GroupBy(s => s.State).OrderBy(g => g.Key))
+        {
+            Console.WriteLine($"  {group.Key}: {group.Count()}");
+        }
+
+        foreach (var (tweak, state) in states
+                     .Where(s => s.State is ApplyState.Applied or ApplyState.Modified)
+                     .OrderBy(s => s.Tweak.Category))
+        {
+            Console.WriteLine($"  [{state}] {tweak.Category} / {tweak.DisplayName}");
+        }
     }
 
     private static void DumpChoiceTweaks(IRegistryProvider registry)
@@ -49,6 +79,21 @@ internal static class Program
             Console.WriteLine($"  сейчас в системе: {raw}" +
                               (known is null ? "  [значение задано не нами]" : $"  ({known.DisplayName})"));
             Console.WriteLine($"  вариантов: {tweak.Choices.Count}, по умолчанию выбран: {tweak.SelectedChoiceId}");
+        }
+    }
+
+    /// <summary>The engine already swallows a failing probe; this dump has to do the same, or one
+    /// broken tweak hides the state of all the others.</summary>
+    private static ApplyState Probe(IOptimization tweak)
+    {
+        try
+        {
+            return tweak.GetStateAsync(CancellationToken.None).GetAwaiter().GetResult();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"  !! {tweak.Id}: {ex.GetType().Name}: {ex.Message}");
+            return ApplyState.Unknown;
         }
     }
 

@@ -5,6 +5,7 @@ using OptiMaxing.Core.Engine;
 using OptiMaxing.Core.Model;
 using OptiMaxing.Core.Optimizations;
 using OptiMaxing.Core.Safety;
+using OptiMaxing.Core.Startup;
 
 namespace OptiMaxing.App.ViewModels;
 
@@ -30,14 +31,17 @@ public sealed class MainViewModel : ObservableObject
 
     public AdvisoryViewModel Advisory { get; } = new();
     public SystemHealthViewModel Health { get; }
+    public StartupViewModel Startup { get; }
 
     public MainViewModel(
         OptimizationCatalog catalog,
         OptimizationEngine engine,
         IRestorePointService restorePoints,
         SystemHealthService health,
-        SensorMonitor sensors)
+        SensorMonitor sensors,
+        StartupInventoryService startup)
     {
+        Startup = new StartupViewModel(startup);
         _engine = engine;
         _restorePoints = restorePoints;
         Health = new SystemHealthViewModel(health, sensors);

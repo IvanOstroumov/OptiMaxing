@@ -1,6 +1,7 @@
 using System.Text;
 using OptiMaxing.Core.Abstractions;
 using OptiMaxing.Core.Platform;
+using OptiMaxing.Core.Startup;
 
 namespace OptiMaxing.Diagnostics;
 
@@ -18,6 +19,24 @@ internal static class Program
 
         using var sensors = new LibreHardwareSensorProvider();
         DumpSensors(sensors);
+
+        DumpStartup(new StartupInventoryService(new WindowsRegistryProvider(), new RealFileSystem()));
+    }
+
+    private static void DumpStartup(StartupInventoryService startup)
+    {
+        Section("Автозапуск");
+        foreach (var e in startup.List())
+        {
+            var flags = new List<string>();
+            if (!e.IsEnabled) flags.Add("отключено");
+            if (!e.TargetExists) flags.Add("ФАЙЛ НЕ НАЙДЕН");
+            if (e.IsCritical) flags.Add("системное");
+
+            Console.WriteLine($"{e.Name,-32} {e.SourceText,-22} {e.ScopeText,-20} {string.Join(", ", flags)}");
+            Console.WriteLine($"    {e.Command}");
+            Console.WriteLine($"    exe: {e.ExecutablePath}");
+        }
     }
 
     private static void DumpSensors(ISensorProvider sensors)

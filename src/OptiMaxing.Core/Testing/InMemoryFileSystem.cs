@@ -23,6 +23,8 @@ public sealed class InMemoryFileSystem : IFileSystem
 
     public bool DirectoryExists(string path) => _directories.Contains(path);
 
+    public bool FileExists(string path) => _files.ContainsKey(path);
+
     public IEnumerable<FileEntry> EnumerateFiles(string directory, string searchPattern) =>
         _files.Values.Where(f => Path.GetDirectoryName(f.Path) == directory);
 

@@ -6,6 +6,8 @@ public sealed class RealFileSystem : IFileSystem
 {
     public bool DirectoryExists(string path) => Directory.Exists(path);
 
+    public bool FileExists(string path) => File.Exists(path);
+
     public IEnumerable<FileEntry> EnumerateFiles(string directory, string searchPattern)
     {
         if (!Directory.Exists(directory))

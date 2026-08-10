@@ -4,6 +4,7 @@ using OptiMaxing.Core.Engine;
 using OptiMaxing.Core.Optimizations;
 using OptiMaxing.Core.Platform;
 using OptiMaxing.Core.Safety;
+using OptiMaxing.Core.Startup;
 
 namespace OptiMaxing.App;
 
@@ -42,7 +43,8 @@ public partial class App : Application
 
         logger.Write(LogLevel.Info, "OptiMaxing started.");
 
-        var viewModel = new MainViewModel(catalog, engine, restorePoints, health, sensors);
+        var startup = new StartupInventoryService(registry, fileSystem);
+        var viewModel = new MainViewModel(catalog, engine, restorePoints, health, sensors, startup);
         var window = new MainWindow { DataContext = viewModel };
         window.Show();
 

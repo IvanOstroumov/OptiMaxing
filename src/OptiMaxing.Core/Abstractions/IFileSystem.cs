@@ -8,6 +8,8 @@ public interface IFileSystem
 {
     bool DirectoryExists(string path);
 
+    bool FileExists(string path);
+
     /// <summary>
     /// Best-effort recursive enumeration: directories/files that error out (locked,
     /// access denied, deleted mid-scan) are silently skipped rather than aborting

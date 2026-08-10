@@ -15,6 +15,48 @@ internal static class Program
 
         DumpSystemInfo(new WindowsSystemInfoProvider());
         DumpHardware(new WmiHardwareInventoryProvider());
+
+        using var sensors = new LibreHardwareSensorProvider();
+        DumpSensors(sensors);
+    }
+
+    private static void DumpSensors(ISensorProvider sensors)
+    {
+        Section("Датчики");
+
+        // Verified on this machine: without elevation LibreHardwareMonitor still opens and returns
+        // GPU (via NVML) and memory data, but its ring0 driver does not load — so CPU temperature
+        // and package power read a flat 0 and storage hardware is absent entirely. The GUI always
+        // runs elevated; this note exists so those zeros are not mistaken for real measurements.
+        if (!IsElevated())
+        {
+            Console.WriteLine("ВНИМАНИЕ: запущено без прав администратора. Драйвер мониторинга не поднимется,");
+            Console.WriteLine("поэтому температура и мощность CPU будут нулями, а накопители не появятся вовсе.");
+        }
+
+        var readings = sensors.Read();
+
+        if (!sensors.IsAvailable)
+        {
+            Console.WriteLine($"Датчики недоступны: {sensors.UnavailableReason}");
+            return;
+        }
+
+        if (readings.Count == 0)
+        {
+            Console.WriteLine("Драйвер мониторинга поднялся, но ни одного значения не отдал.");
+            return;
+        }
+
+        foreach (var group in readings.GroupBy(r => (r.Component, r.HardwareName)))
+        {
+            Console.WriteLine();
+            Console.WriteLine($"-- {group.Key.Component}: {group.Key.HardwareName}");
+            foreach (var r in group.OrderBy(r => r.Kind).ThenBy(r => r.SensorName))
+            {
+                Console.WriteLine($"   {r.Kind,-12} {r.SensorName,-32} {r.Value,10:F1} {r.Unit}");
+            }
+        }
     }
 
     private static void DumpSystemInfo(ISystemInfoProvider info)
@@ -96,6 +138,13 @@ internal static class Program
                 Console.WriteLine(f);
             }
         }
+    }
+
+    private static bool IsElevated()
+    {
+        using var identity = System.Security.Principal.WindowsIdentity.GetCurrent();
+        return new System.Security.Principal.WindowsPrincipal(identity)
+            .IsInRole(System.Security.Principal.WindowsBuiltInRole.Administrator);
     }
 
     private static void Section(string title)

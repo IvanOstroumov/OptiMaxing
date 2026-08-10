@@ -1,6 +1,8 @@
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Text.Json;
 using System.Windows;
+using Microsoft.Win32;
 using OptiMaxing.Core.Engine;
 using OptiMaxing.Core.Model;
 using OptiMaxing.Core.Optimizations;
@@ -101,6 +103,99 @@ public sealed class MainViewModel : ObservableObject
             && (item.Category == Categories.Apps || item.Category == Categories.Cleanup)));
 
         ClearSelectionCommand = new RelayCommand(() => ApplyPreset(_ => false));
+
+        ExportPresetCommand = new RelayCommand(ExportPresetAsync);
+        ImportPresetCommand = new RelayCommand(ImportPresetAsync);
+    }
+
+    private sealed record TweakExportEntry(string Id, bool IsSelected, string? SelectedChoiceId);
+
+    private Task ExportPresetAsync()
+    {
+        var dialog = new SaveFileDialog
+        {
+            Filter = "JSON (*.json)|*.json",
+            FileName = "optimaxing-preset.json",
+        };
+
+        if (dialog.ShowDialog() != true)
+        {
+            return Task.CompletedTask;
+        }
+
+        var entries = _all
+            .Select(o => new TweakExportEntry(o.Model.Id, o.IsSelected, o.Choice?.SelectedChoiceId))
+            .ToList();
+
+        try
+        {
+            var json = JsonSerializer.Serialize(entries, new JsonSerializerOptions { WriteIndented = true });
+            File.WriteAllText(dialog.FileName, json);
+            StatusText = $"Набор твиков сохранён: {dialog.FileName}";
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            MessageBox.Show($"Не удалось сохранить файл: {ex.Message}", "OptiMaxing",
+                MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+
+        return Task.CompletedTask;
+    }
+
+    private Task ImportPresetAsync()
+    {
+        var dialog = new OpenFileDialog { Filter = "JSON (*.json)|*.json" };
+
+        if (dialog.ShowDialog() != true)
+        {
+            return Task.CompletedTask;
+        }
+
+        List<TweakExportEntry>? entries;
+        try
+        {
+            var json = File.ReadAllText(dialog.FileName);
+            entries = JsonSerializer.Deserialize<List<TweakExportEntry>>(json);
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or JsonException)
+        {
+            MessageBox.Show($"Не удалось загрузить файл: {ex.Message}", "OptiMaxing",
+                MessageBoxButton.OK, MessageBoxImage.Error);
+            return Task.CompletedTask;
+        }
+
+        if (entries is null)
+        {
+            return Task.CompletedTask;
+        }
+
+        var byId = entries.ToDictionary(e => e.Id);
+        var matched = 0;
+
+        foreach (var item in _all)
+        {
+            if (!byId.TryGetValue(item.Model.Id, out var entry))
+            {
+                item.IsSelected = false;
+                continue;
+            }
+
+            matched++;
+            item.IsSelected = entry.IsSelected;
+
+            if (entry.SelectedChoiceId is not null && item.Choice is not null)
+            {
+                var choice = item.Choice.Choices.FirstOrDefault(c => c.Id == entry.SelectedChoiceId);
+                if (choice is not null)
+                {
+                    item.SelectedChoice = choice;
+                }
+            }
+        }
+
+        RefreshCommands();
+        StatusText = $"Набор твиков загружен: {matched} из {entries.Count} пунктов найдены в текущем каталоге.";
+        return Task.CompletedTask;
     }
 
     // Categories.Power/Gpu/Storage/Network/Startup/Services cover the tweaks that
@@ -141,6 +236,8 @@ public sealed class MainViewModel : ObservableObject
     public RelayCommand SelectPrivacyPresetCommand { get; }
     public RelayCommand SelectCleanupPresetCommand { get; }
     public RelayCommand ClearSelectionCommand { get; }
+    public RelayCommand ExportPresetCommand { get; }
+    public RelayCommand ImportPresetCommand { get; }
 
     public IReadOnlyList<OptimizationViewModel> SelectedItems =>
         _all.Where(o => o.IsSelected).ToList();

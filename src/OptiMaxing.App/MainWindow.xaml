@@ -251,6 +251,10 @@
                                     Margin="8,0,0,0" ToolTip="Bloatware и очистка диска" />
                             <Button Content="Снять выделение" Command="{Binding ClearSelectionCommand}" Margin="8,0,0,0" />
                             <Button Content="Обновить состояние" Command="{Binding ScanCommand}" Margin="8,0,0,0" />
+                            <Button Content="Экспорт набора…" Command="{Binding ExportPresetCommand}" Margin="16,0,0,0"
+                                    ToolTip="Сохранить текущий выбор твиков в JSON-файл" />
+                            <Button Content="Импорт набора…" Command="{Binding ImportPresetCommand}" Margin="8,0,0,0"
+                                    ToolTip="Загрузить выбор твиков из ранее сохранённого JSON-файла" />
                         </StackPanel>
                     </Grid>
 

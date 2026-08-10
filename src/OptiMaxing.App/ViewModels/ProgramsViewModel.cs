@@ -4,6 +4,8 @@ using OptiMaxing.Core.Programs;
 
 namespace OptiMaxing.App.ViewModels;
 
+public enum ProgramSort { Name, Size, InstallDate, Publisher }
+
 public sealed class ProgramRow(InstalledProgram program) : ObservableObject
 {
     public InstalledProgram Program { get; } = program;
@@ -30,6 +32,7 @@ public sealed class ProgramsViewModel : ObservableObject
     private string _filter = string.Empty;
     private bool _showSystemComponents;
     private bool _isBusy;
+    private ProgramSort _sortMode = ProgramSort.Size;
 
     public ProgramsViewModel(InstalledProgramsService programs)
     {
@@ -85,26 +88,42 @@ public sealed class ProgramsViewModel : ObservableObject
         private set => SetField(ref _statusText, value);
     }
 
+    public ProgramSort SortMode
+    {
+        get => _sortMode;
+        set { if (SetField(ref _sortMode, value)) Refresh(); }
+    }
+
+    public IReadOnlyList<SortOption<ProgramSort>> SortOptions { get; } =
+    [
+        new(ProgramSort.Size, "По размеру"),
+        new(ProgramSort.Name, "По имени"),
+        new(ProgramSort.InstallDate, "По дате установки (новые вперёд)"),
+        new(ProgramSort.Publisher, "По издателю"),
+    ];
+
     private void Refresh(string? message = null)
     {
         var all = _programs.List();
         var selectedId = Selected?.Program.Id;
 
-        Entries.Clear();
-        foreach (var program in all)
+        var filtered = all.Where(program =>
+            (ShowSystemComponents || !program.IsSystemComponent)
+            && (string.IsNullOrWhiteSpace(Filter)
+                || program.Name.Contains(Filter, StringComparison.CurrentCultureIgnoreCase)
+                || program.Publisher?.Contains(Filter, StringComparison.CurrentCultureIgnoreCase) == true));
+
+        IEnumerable<InstalledProgram> sorted = SortMode switch
         {
-            if (!ShowSystemComponents && program.IsSystemComponent)
-            {
-                continue;
-            }
+            ProgramSort.Size => filtered.OrderByDescending(p => p.EstimatedSizeBytes ?? 0),
+            ProgramSort.InstallDate => filtered.OrderByDescending(p => p.InstallDate ?? DateTime.MinValue),
+            ProgramSort.Publisher => filtered.OrderBy(p => p.Publisher ?? string.Empty, StringComparer.CurrentCultureIgnoreCase),
+            _ => filtered.OrderBy(p => p.Name, StringComparer.CurrentCultureIgnoreCase),
+        };
 
-            if (!string.IsNullOrWhiteSpace(Filter)
-                && !program.Name.Contains(Filter, StringComparison.CurrentCultureIgnoreCase)
-                && program.Publisher?.Contains(Filter, StringComparison.CurrentCultureIgnoreCase) != true)
-            {
-                continue;
-            }
-
+        Entries.Clear();
+        foreach (var program in sorted)
+        {
             Entries.Add(new ProgramRow(program));
         }
 

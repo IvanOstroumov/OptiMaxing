@@ -92,6 +92,14 @@ public sealed class SystemHealthViewModel : ObservableObject
         _sensorTimer.Tick += (_, _) => PollSensors();
 
         Refresh();
+
+        // This is the tab shown by default when the window opens, but TabItem.IsSelected only
+        // fires its OneWayToSource binding on actual selection *changes* — not for the tab that's
+        // already selected at initial layout. Without this, IsActive stayed false and the sensor
+        // timer never started until the user manually switched away and back to this tab, leaving
+        // the panel blank with no data and no error message. Setting it here starts polling
+        // immediately; the view's binding still takes over correctly for later tab switches.
+        IsActive = true;
     }
 
     public RelayCommand RefreshCommand { get; }

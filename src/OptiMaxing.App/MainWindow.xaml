@@ -240,7 +240,15 @@
                                  ToolTip="Поиск по названию, описанию и категории" />
 
                         <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="10,0,0,0">
-                            <Button Content="Пресет: безопасные" Command="{Binding SelectSafePresetCommand}" />
+                            <Button Content="Пресет: безопасные" Command="{Binding SelectSafePresetCommand}"
+                                    ToolTip="Все твики с уровнем риска «безопасно»" />
+                            <Button Content="Пресет: производительность" Command="{Binding SelectPerformancePresetCommand}"
+                                    Margin="8,0,0,0"
+                                    ToolTip="Электропитание, видеокарта, диски, сеть, автозагрузка, службы — без продвинутых твиков" />
+                            <Button Content="Пресет: приватность" Command="{Binding SelectPrivacyPresetCommand}"
+                                    Margin="8,0,0,0" ToolTip="Всё из категории «Приватность»" />
+                            <Button Content="Пресет: чистка" Command="{Binding SelectCleanupPresetCommand}"
+                                    Margin="8,0,0,0" ToolTip="Bloatware и очистка диска" />
                             <Button Content="Снять выделение" Command="{Binding ClearSelectionCommand}" Margin="8,0,0,0" />
                             <Button Content="Обновить состояние" Command="{Binding ScanCommand}" Margin="8,0,0,0" />
                         </StackPanel>
@@ -554,8 +562,13 @@
                             <Button Content="Ниже" Command="{Binding SetLowPriorityCommand}" Margin="8,0,0,0" />
                             <Button Content="Завершить" Command="{Binding KillCommand}" Margin="8,0,0,0" />
                         </StackPanel>
-                        <TextBox Text="{Binding Filter, UpdateSourceTrigger=PropertyChanged}"
-                                 Width="200" HorizontalAlignment="Left" VerticalAlignment="Center" />
+                        <StackPanel Orientation="Horizontal">
+                            <TextBox Text="{Binding Filter, UpdateSourceTrigger=PropertyChanged}"
+                                     Width="200" VerticalAlignment="Center" />
+                            <ComboBox ItemsSource="{Binding SortOptions}" SelectedValue="{Binding SortMode}"
+                                      SelectedValuePath="Value" DisplayMemberPath="Label"
+                                      Width="200" Margin="8,0,0,0" VerticalAlignment="Center" />
+                        </StackPanel>
                     </DockPanel>
 
                     <TextBlock DockPanel.Dock="Bottom" Text="{Binding StatusText}"
@@ -666,6 +679,9 @@
                             <CheckBox Content="Только рекомендуемые к отключению"
                                       IsChecked="{Binding OnlyRecommended}"
                                       VerticalAlignment="Center" Margin="12,0,0,0" />
+                            <ComboBox ItemsSource="{Binding SortOptions}" SelectedValue="{Binding SortMode}"
+                                      SelectedValuePath="Value" DisplayMemberPath="Label"
+                                      Width="220" Margin="12,0,0,0" VerticalAlignment="Center" />
                         </StackPanel>
                     </DockPanel>
 
@@ -779,6 +795,9 @@
                             <CheckBox Content="Показывать системные компоненты"
                                       IsChecked="{Binding ShowSystemComponents}"
                                       VerticalAlignment="Center" Margin="12,0,0,0" />
+                            <ComboBox ItemsSource="{Binding SortOptions}" SelectedValue="{Binding SortMode}"
+                                      SelectedValuePath="Value" DisplayMemberPath="Label"
+                                      Width="220" Margin="12,0,0,0" VerticalAlignment="Center" />
                         </StackPanel>
                     </DockPanel>
 

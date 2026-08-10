@@ -5,6 +5,8 @@ using OptiMaxing.Core.Services;
 
 namespace OptiMaxing.App.ViewModels;
 
+public enum ServiceSort { Name, Status, StartupType }
+
 public sealed class ServiceEntryRow(ServiceRow row) : ObservableObject
 {
     public ServiceRow Row { get; } = row;
@@ -30,6 +32,7 @@ public sealed class ServicesViewModel : ObservableObject
     private string _statusText = string.Empty;
     private string _filter = string.Empty;
     private bool _onlyRecommended;
+    private ServiceSort _sortMode = ServiceSort.Name;
 
     public ServicesViewModel(ServiceInventoryService services)
     {
@@ -92,26 +95,42 @@ public sealed class ServicesViewModel : ObservableObject
         private set => SetField(ref _statusText, value);
     }
 
+    public ServiceSort SortMode
+    {
+        get => _sortMode;
+        set { if (SetField(ref _sortMode, value)) Refresh(); }
+    }
+
+    public IReadOnlyList<SortOption<ServiceSort>> SortOptions { get; } =
+    [
+        new(ServiceSort.Name, "По имени"),
+        new(ServiceSort.Status, "По состоянию (работает вперёд)"),
+        new(ServiceSort.StartupType, "По типу запуска"),
+    ];
+
     private void Refresh(string? message = null)
     {
         var all = _services.List();
         var selectedName = Selected?.Name;
 
-        Entries.Clear();
-        foreach (var row in all)
+        var filtered = all.Where(row =>
+            (!OnlyRecommended || row.Safety == ServiceSafety.SafeToDisable)
+            && (string.IsNullOrWhiteSpace(Filter)
+                || row.Info.DisplayName.Contains(Filter, StringComparison.CurrentCultureIgnoreCase)
+                || row.Info.Name.Contains(Filter, StringComparison.CurrentCultureIgnoreCase)));
+
+        IEnumerable<ServiceRow> sorted = SortMode switch
         {
-            if (OnlyRecommended && row.Safety != ServiceSafety.SafeToDisable)
-            {
-                continue;
-            }
+            ServiceSort.Status => filtered.OrderByDescending(r => r.Info.IsRunning)
+                .ThenBy(r => r.Info.DisplayName, StringComparer.CurrentCultureIgnoreCase),
+            ServiceSort.StartupType => filtered.OrderBy(r => r.Info.StartupType)
+                .ThenBy(r => r.Info.DisplayName, StringComparer.CurrentCultureIgnoreCase),
+            _ => filtered.OrderBy(r => r.Info.DisplayName, StringComparer.CurrentCultureIgnoreCase),
+        };
 
-            if (!string.IsNullOrWhiteSpace(Filter)
-                && !row.Info.DisplayName.Contains(Filter, StringComparison.CurrentCultureIgnoreCase)
-                && !row.Info.Name.Contains(Filter, StringComparison.CurrentCultureIgnoreCase))
-            {
-                continue;
-            }
-
+        Entries.Clear();
+        foreach (var row in sorted)
+        {
             Entries.Add(new ServiceEntryRow(row));
         }
 

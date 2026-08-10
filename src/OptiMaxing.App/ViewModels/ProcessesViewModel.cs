@@ -6,6 +6,10 @@ using OptiMaxing.Core.Safety;
 
 namespace OptiMaxing.App.ViewModels;
 
+public enum ProcessSort { Cpu, Memory, Name, Threads, Pid }
+
+public sealed record SortOption<T>(T Value, string Label);
+
 public sealed class ProcessRow(ProcessSample sample) : ObservableObject
 {
     public ProcessSample Sample { get; private set; } = sample;
@@ -43,6 +47,7 @@ public sealed class ProcessesViewModel : ObservableObject
     private bool _isActive;
     private string _statusText = string.Empty;
     private string _filter = string.Empty;
+    private ProcessSort _sortMode = ProcessSort.Cpu;
 
     public ProcessesViewModel(ProcessMonitor monitor)
     {
@@ -110,6 +115,21 @@ public sealed class ProcessesViewModel : ObservableObject
         set { if (SetField(ref _filter, value)) Refresh(); }
     }
 
+    public ProcessSort SortMode
+    {
+        get => _sortMode;
+        set { if (SetField(ref _sortMode, value)) Refresh(); }
+    }
+
+    public IReadOnlyList<SortOption<ProcessSort>> SortOptions { get; } =
+    [
+        new(ProcessSort.Cpu, "По загрузке CPU"),
+        new(ProcessSort.Memory, "По памяти"),
+        new(ProcessSort.Name, "По имени"),
+        new(ProcessSort.Threads, "По потокам"),
+        new(ProcessSort.Pid, "По PID"),
+    ];
+
     public string StatusText
     {
         get => _statusText;
@@ -119,12 +139,20 @@ public sealed class ProcessesViewModel : ObservableObject
     private void Refresh()
     {
         var samples = _monitor.Poll();
-        var matching = samples
+        var filtered = samples
             .Where(s => string.IsNullOrWhiteSpace(Filter)
-                        || s.Process.Name.Contains(Filter, StringComparison.CurrentCultureIgnoreCase))
-            .OrderByDescending(s => s.CpuPercent ?? -1)
-            .ThenByDescending(s => s.Process.WorkingSetBytes)
-            .ToList();
+                        || s.Process.Name.Contains(Filter, StringComparison.CurrentCultureIgnoreCase));
+
+        IEnumerable<ProcessSample> sorted = SortMode switch
+        {
+            ProcessSort.Memory => filtered.OrderByDescending(s => s.Process.WorkingSetBytes),
+            ProcessSort.Name => filtered.OrderBy(s => s.Process.Name, StringComparer.CurrentCultureIgnoreCase),
+            ProcessSort.Threads => filtered.OrderByDescending(s => s.Process.ThreadCount),
+            ProcessSort.Pid => filtered.OrderBy(s => s.Process.Id),
+            _ => filtered.OrderByDescending(s => s.CpuPercent ?? -1).ThenByDescending(s => s.Process.WorkingSetBytes),
+        };
+
+        var matching = sorted.ToList();
 
         var selectedId = Selected?.Id;
         var seen = new HashSet<int>();

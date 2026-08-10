@@ -4,6 +4,7 @@ using System.Windows;
 using OptiMaxing.Core.Engine;
 using OptiMaxing.Core.Model;
 using OptiMaxing.Core.Optimizations;
+using OptiMaxing.Core.Optimizations.Catalog;
 using OptiMaxing.Core.Programs;
 using OptiMaxing.Core.Safety;
 using OptiMaxing.Core.Services;
@@ -85,20 +86,42 @@ public sealed class MainViewModel : ObservableObject
         ApplyCommand = new RelayCommand(ApplyAsync, () => !IsBusy && SelectedItems.Count > 0);
         RevertCommand = new RelayCommand(RevertAsync, () => !IsBusy && SelectedItems.Count > 0);
         CreateRestorePointCommand = new RelayCommand(CreateRestorePointAsync, () => !IsBusy);
-        SelectSafePresetCommand = new RelayCommand(() =>
-        {
-            foreach (var item in _all)
-                item.IsSelected = item.Risk == RiskLevel.Safe;
-            RefreshCommands();
-            return Task.CompletedTask;
-        });
-        ClearSelectionCommand = new RelayCommand(() =>
-        {
-            foreach (var item in _all)
-                item.IsSelected = false;
-            RefreshCommands();
-            return Task.CompletedTask;
-        });
+        SelectSafePresetCommand = new RelayCommand(() => ApplyPreset(item => item.Risk == RiskLevel.Safe));
+
+        SelectPerformancePresetCommand = new RelayCommand(() => ApplyPreset(item =>
+            item.Risk != RiskLevel.Advanced && item.Risk != RiskLevel.Advisory
+            && PerformanceCategories.Contains(item.Category)));
+
+        SelectPrivacyPresetCommand = new RelayCommand(() => ApplyPreset(item =>
+            item.Risk != RiskLevel.Advanced && item.Risk != RiskLevel.Advisory
+            && item.Category == Categories.Privacy));
+
+        SelectCleanupPresetCommand = new RelayCommand(() => ApplyPreset(item =>
+            item.Risk != RiskLevel.Advanced && item.Risk != RiskLevel.Advisory
+            && (item.Category == Categories.Apps || item.Category == Categories.Cleanup)));
+
+        ClearSelectionCommand = new RelayCommand(() => ApplyPreset(_ => false));
+    }
+
+    // Categories.Power/Gpu/Storage/Network/Startup/Services cover the tweaks that
+    // actually move the needle for gaming performance; Privacy/Apps/Cleanup presets deliberately
+    // stay narrow to their own category so each preset button does one clearly-named thing.
+    private static readonly HashSet<string> PerformanceCategories =
+    [
+        Categories.Power,
+        Categories.Gpu,
+        Categories.Storage,
+        Categories.Network,
+        Categories.Startup,
+        Categories.Services,
+    ];
+
+    private Task ApplyPreset(Func<OptimizationViewModel, bool> predicate)
+    {
+        foreach (var item in _all)
+            item.IsSelected = predicate(item);
+        RefreshCommands();
+        return Task.CompletedTask;
     }
 
     public const string AllCategories = "Все категории";
@@ -114,6 +137,9 @@ public sealed class MainViewModel : ObservableObject
     public RelayCommand RevertCommand { get; }
     public RelayCommand CreateRestorePointCommand { get; }
     public RelayCommand SelectSafePresetCommand { get; }
+    public RelayCommand SelectPerformancePresetCommand { get; }
+    public RelayCommand SelectPrivacyPresetCommand { get; }
+    public RelayCommand SelectCleanupPresetCommand { get; }
     public RelayCommand ClearSelectionCommand { get; }
 
     public IReadOnlyList<OptimizationViewModel> SelectedItems =>

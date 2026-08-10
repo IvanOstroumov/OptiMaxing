@@ -16,6 +16,8 @@ public partial class App : Application
     {
         base.OnStartup(e);
 
+        ThemeService.LoadSaved();
+
         var logger = new FileLogger();
 
         DispatcherUnhandledException += (_, args) =>

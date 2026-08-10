@@ -106,7 +106,20 @@ public sealed class MainViewModel : ObservableObject
 
         ExportPresetCommand = new RelayCommand(ExportPresetAsync);
         ImportPresetCommand = new RelayCommand(ImportPresetAsync);
+
+        ToggleThemeCommand = new RelayCommand(() =>
+        {
+            ThemeService.Toggle();
+            OnPropertyChanged(nameof(ThemeToggleText));
+            return Task.CompletedTask;
+        });
     }
+
+    public RelayCommand ToggleThemeCommand { get; }
+
+    public string ThemeToggleText => ThemeService.Current == AppTheme.Dark
+        ? "Светлая тема"
+        : "Тёмная тема";
 
     private sealed record TweakExportEntry(string Id, bool IsSelected, string? SelectedChoiceId);
 

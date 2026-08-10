@@ -11,6 +11,7 @@ public static class AppPaths
     public static string Journal => EnsureCreated(Path.Combine(Root, "Journal"));
     public static string Profiles => EnsureCreated(Path.Combine(Root, "Profiles"));
     public static string Reports => EnsureCreated(Path.Combine(Root, "Reports"));
+    public static string Settings => EnsureCreated(Path.Combine(Root, "Settings"));
 
     private static string EnsureCreated(string path)
     {

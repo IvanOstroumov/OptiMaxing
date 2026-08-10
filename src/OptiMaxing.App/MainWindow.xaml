@@ -5,7 +5,7 @@
         Title="OptiMaxing — оптимизация игрового ПК"
         Height="760" Width="1180"
         MinHeight="560" MinWidth="900"
-        Background="{StaticResource BackgroundBrush}"
+        Background="{DynamicResource BackgroundBrush}"
         WindowStartupLocation="CenterScreen">
 
     <Window.Resources>
@@ -24,16 +24,20 @@
         </Grid.RowDefinitions>
 
         <!-- Header -->
-        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,12">
-            <TextBlock Text="OptiMaxing" FontSize="24" FontWeight="Bold"
-                       Foreground="{StaticResource AccentBrush}" VerticalAlignment="Center" />
-            <TextBlock Text="каждое изменение записывается в журнал и откатывается"
-                       Style="{StaticResource MutedText}" Margin="14,0,0,0" VerticalAlignment="Center" />
-        </StackPanel>
+        <DockPanel Grid.Row="0" Margin="0,0,0,12">
+            <Button DockPanel.Dock="Right" Content="{Binding ThemeToggleText}"
+                    Command="{Binding ToggleThemeCommand}" />
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="OptiMaxing" FontSize="24" FontWeight="Bold"
+                           Foreground="{DynamicResource AccentBrush}" VerticalAlignment="Center" />
+                <TextBlock Text="каждое изменение записывается в журнал и откатывается"
+                           Style="{StaticResource MutedText}" Margin="14,0,0,0" VerticalAlignment="Center" />
+            </StackPanel>
+        </DockPanel>
 
         <!-- Restore point banner -->
-        <Border Grid.Row="1" Background="{StaticResource PanelBrush}" CornerRadius="8"
-                BorderBrush="{StaticResource BorderBrush}" BorderThickness="1"
+        <Border Grid.Row="1" Background="{DynamicResource PanelBrush}" CornerRadius="8"
+                BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
                 Padding="14,10" Margin="0,0,0,12"
                 Visibility="{Binding RestorePointBanner, Converter={StaticResource TextToVisibility}}">
             <DockPanel>
@@ -54,26 +58,26 @@
                             <TextBlock Text="Снимок системы на момент запуска" FontWeight="SemiBold" FontSize="15" VerticalAlignment="Center" />
                         </DockPanel>
 
-                        <Border Background="{StaticResource PanelBrush}" CornerRadius="8"
-                                BorderBrush="{StaticResource RiskCautionBrush}" BorderThickness="1"
+                        <Border Background="{DynamicResource PanelBrush}" CornerRadius="8"
+                                BorderBrush="{DynamicResource RiskCautionBrush}" BorderThickness="1"
                                 Padding="14,10" Margin="0,0,0,12"
                                 Visibility="{Binding HasWarnings, Converter={StaticResource BoolToVisibility}}">
                             <StackPanel>
                                 <TextBlock Text="Стоит обратить внимание" FontWeight="SemiBold" Margin="0,0,0,6"
-                                           Foreground="{StaticResource RiskCautionBrush}" />
+                                           Foreground="{DynamicResource RiskCautionBrush}" />
                                 <ItemsControl ItemsSource="{Binding Warnings}">
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
                                             <TextBlock Text="{Binding}" TextWrapping="Wrap" Margin="0,2"
-                                                       Foreground="{StaticResource RiskCautionBrush}" />
+                                                       Foreground="{DynamicResource RiskCautionBrush}" />
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
                             </StackPanel>
                         </Border>
 
-                        <Border Background="{StaticResource PanelBrush}" CornerRadius="8"
-                                BorderBrush="{StaticResource BorderBrush}" BorderThickness="1"
+                        <Border Background="{DynamicResource PanelBrush}" CornerRadius="8"
+                                BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
                                 Padding="14,10" Margin="0,0,0,10">
                             <StackPanel>
                                 <TextBlock Text="{Binding OsDescription}" FontWeight="SemiBold" FontSize="14" />
@@ -83,8 +87,8 @@
                             </StackPanel>
                         </Border>
 
-                        <Border Background="{StaticResource PanelBrush}" CornerRadius="8"
-                                BorderBrush="{StaticResource BorderBrush}" BorderThickness="1"
+                        <Border Background="{DynamicResource PanelBrush}" CornerRadius="8"
+                                BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
                                 Padding="14,10" Margin="0,0,0,10">
                             <StackPanel>
                                 <TextBlock Text="Безопасность" FontWeight="SemiBold" Margin="0,0,0,6" />
@@ -100,10 +104,10 @@
                                                 <TextBlock Grid.Column="1" Text="{Binding ValueText}">
                                                     <TextBlock.Style>
                                                         <Style TargetType="TextBlock">
-                                                            <Setter Property="Foreground" Value="{StaticResource MutedTextBrush}" />
+                                                            <Setter Property="Foreground" Value="{DynamicResource MutedTextBrush}" />
                                                             <Style.Triggers>
                                                                 <DataTrigger Binding="{Binding IsConcern}" Value="True">
-                                                                    <Setter Property="Foreground" Value="{StaticResource RiskCautionBrush}" />
+                                                                    <Setter Property="Foreground" Value="{DynamicResource RiskCautionBrush}" />
                                                                     <Setter Property="FontWeight" Value="SemiBold" />
                                                                 </DataTrigger>
                                                             </Style.Triggers>
@@ -117,19 +121,19 @@
                             </StackPanel>
                         </Border>
 
-                        <Border Background="{StaticResource PanelBrush}" CornerRadius="8"
-                                BorderBrush="{StaticResource BorderBrush}" BorderThickness="1"
+                        <Border Background="{DynamicResource PanelBrush}" CornerRadius="8"
+                                BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
                                 Padding="14,10" Margin="0,0,0,10">
                             <StackPanel>
                                 <TextBlock Text="Оперативная память" FontWeight="SemiBold" Margin="0,0,0,6" />
                                 <ProgressBar Height="6" Minimum="0" Maximum="100" Value="{Binding MemoryUsedPercent, Mode=OneWay}"
-                                             Foreground="{StaticResource AccentBrush}" Background="#0f1622" BorderThickness="0" />
+                                             Foreground="{DynamicResource AccentBrush}" Background="#0f1622" BorderThickness="0" />
                                 <TextBlock Text="{Binding MemorySummary}" Style="{StaticResource MutedText}" Margin="0,6,0,0" />
                             </StackPanel>
                         </Border>
 
-                        <Border Background="{StaticResource PanelBrush}" CornerRadius="8"
-                                BorderBrush="{StaticResource BorderBrush}" BorderThickness="1"
+                        <Border Background="{DynamicResource PanelBrush}" CornerRadius="8"
+                                BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
                                 Padding="14,10">
                             <StackPanel>
                                 <TextBlock Text="Диски" FontWeight="SemiBold" Margin="0,0,0,6" />
@@ -143,10 +147,10 @@
                                                              Background="#0f1622" BorderThickness="0" Margin="0,4,0,0">
                                                     <ProgressBar.Style>
                                                         <Style TargetType="ProgressBar">
-                                                            <Setter Property="Foreground" Value="{StaticResource AccentBrush}" />
+                                                            <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
                                                             <Style.Triggers>
                                                                 <DataTrigger Binding="{Binding IsLow}" Value="True">
-                                                                    <Setter Property="Foreground" Value="{StaticResource RiskCautionBrush}" />
+                                                                    <Setter Property="Foreground" Value="{DynamicResource RiskCautionBrush}" />
                                                                 </DataTrigger>
                                                             </Style.Triggers>
                                                         </Style>
@@ -160,8 +164,8 @@
                             </StackPanel>
                         </Border>
 
-                        <Border Background="{StaticResource PanelBrush}" CornerRadius="8"
-                                BorderBrush="{StaticResource BorderBrush}" BorderThickness="1"
+                        <Border Background="{DynamicResource PanelBrush}" CornerRadius="8"
+                                BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
                                 Padding="14,10" Margin="0,10,0,0">
                             <StackPanel>
                                 <TextBlock Text="Железо" FontWeight="SemiBold" Margin="0,0,0,6" />
@@ -175,20 +179,20 @@
                             </StackPanel>
                         </Border>
 
-                        <Border Background="{StaticResource PanelBrush}" CornerRadius="8"
-                                BorderBrush="{StaticResource BorderBrush}" BorderThickness="1"
+                        <Border Background="{DynamicResource PanelBrush}" CornerRadius="8"
+                                BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
                                 Padding="14,10" Margin="0,10,0,0">
                             <StackPanel>
                                 <TextBlock Text="Датчики в реальном времени" FontWeight="SemiBold" Margin="0,0,0,6" />
                                 <TextBlock Text="{Binding SensorStatus}" TextWrapping="Wrap"
-                                           Foreground="{StaticResource RiskCautionBrush}" Margin="0,0,0,6"
+                                           Foreground="{DynamicResource RiskCautionBrush}" Margin="0,0,0,6"
                                            Visibility="{Binding HasSensorProblem, Converter={StaticResource BoolToVisibility}}" />
                                 <ItemsControl ItemsSource="{Binding SensorGroups}">
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
                                             <StackPanel Margin="0,0,0,10">
                                                 <TextBlock Text="{Binding Title}" FontWeight="SemiBold" FontSize="13"
-                                                           Foreground="{StaticResource AccentBrush}" Margin="0,4,0,4" />
+                                                           Foreground="{DynamicResource AccentBrush}" Margin="0,4,0,4" />
                                                 <ItemsControl ItemsSource="{Binding Sensors}">
                                                     <ItemsControl.ItemTemplate>
                                                         <DataTemplate>
@@ -270,8 +274,8 @@
 
                         <!-- Category tree (flat — the catalog has no sub-categories, so a single-level
                              list with counts gives the same navigation value as a real tree) -->
-                        <Border Grid.Column="0" Background="{StaticResource PanelBrush}" CornerRadius="8"
-                                BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" Padding="6">
+                        <Border Grid.Column="0" Background="{DynamicResource PanelBrush}" CornerRadius="8"
+                                BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" Padding="6">
                             <ListBox ItemsSource="{Binding CategoryEntries}" Background="Transparent" BorderThickness="0"
                                      SelectedValuePath="Name" SelectedValue="{Binding SelectedCategory}"
                                      ScrollViewer.HorizontalScrollBarVisibility="Disabled">
@@ -316,8 +320,8 @@
                             </ListBox>
                         </Border>
 
-                        <Border Grid.Column="2" Background="{StaticResource PanelBrush}" CornerRadius="8"
-                                BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
+                        <Border Grid.Column="2" Background="{DynamicResource PanelBrush}" CornerRadius="8"
+                                BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
                             <!-- ScrollUnit=Pixel keeps virtualization (these lists grow to hundreds of
                                  rows) while scrolling by pixels instead of by whole cards — with the
                                  default item-based scrolling one wheel tick skipped an entire tweak. -->
@@ -345,7 +349,7 @@
                                                 <ControlTemplate TargetType="ToggleButton">
                                                     <Grid Margin="4">
                                                         <Border x:Name="Card" CornerRadius="6" Background="Transparent"
-                                                                BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,1" />
+                                                                BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1" />
                                                         <Border x:Name="Accent" Width="3" HorizontalAlignment="Left"
                                                                 CornerRadius="2" Background="Transparent" Margin="0,2" />
                                                         <ContentPresenter Margin="12,10" />
@@ -357,7 +361,7 @@
                                                         <Trigger Property="IsChecked" Value="True">
                                                             <Setter TargetName="Card" Property="Background" Value="#1e3a5f" />
                                                             <Setter TargetName="Accent" Property="Background"
-                                                                    Value="{StaticResource AccentBrush}" />
+                                                                    Value="{DynamicResource AccentBrush}" />
                                                         </Trigger>
                                                     </ControlTemplate.Triggers>
                                                 </ControlTemplate>
@@ -391,7 +395,7 @@
                                                                Margin="0,4,0,0" />
 
                                                     <TextBlock Style="{StaticResource MutedText}" Margin="0,4,0,0"
-                                                               Foreground="{StaticResource RiskCautionBrush}"
+                                                               Foreground="{DynamicResource RiskCautionBrush}"
                                                                Text="{Binding TradeOff, StringFormat='Цена: {0}'}"
                                                                Visibility="{Binding TradeOff, Converter={StaticResource TextToVisibility}}" />
 
@@ -408,15 +412,15 @@
 
                                                         <TextBlock Text="{Binding CurrentValueText}" FontSize="11"
                                                                    Margin="0,4,0,0" FontFamily="Consolas"
-                                                                   Foreground="{StaticResource AccentBrush}" />
+                                                                   Foreground="{DynamicResource AccentBrush}" />
                                                     </StackPanel>
 
                                                     <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
                                                         <TextBlock Text="{Binding StateText}" FontSize="11"
-                                                                   Foreground="{StaticResource AccentBrush}" />
+                                                                   Foreground="{DynamicResource AccentBrush}" />
                                                         <TextBlock Text="— настройка задана другим инструментом" FontSize="11"
                                                                    Margin="8,0,0,0"
-                                                                   Foreground="{StaticResource RiskCautionBrush}"
+                                                                   Foreground="{DynamicResource RiskCautionBrush}"
                                                                    Visibility="{Binding HasWarning, Converter={StaticResource BoolToVisibility}}" />
                                                     </StackPanel>
                                                 </StackPanel>
@@ -427,12 +431,12 @@
                             </ListBox>
                         </Border>
 
-                        <Border Grid.Column="4" Background="{StaticResource PanelBrush}" CornerRadius="8"
-                                BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" Padding="12">
+                        <Border Grid.Column="4" Background="{DynamicResource PanelBrush}" CornerRadius="8"
+                                BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" Padding="12">
                             <DockPanel>
                                 <TextBlock DockPanel.Dock="Top" Text="Журнал" FontWeight="SemiBold" Margin="0,0,0,8" />
                                 <ListBox ItemsSource="{Binding LogLines}" Background="Transparent" BorderThickness="0"
-                                         Foreground="{StaticResource MutedTextBrush}"
+                                         Foreground="{DynamicResource MutedTextBrush}"
                                          FontFamily="Consolas" FontSize="12" />
                             </DockPanel>
                         </Border>
@@ -448,11 +452,11 @@
 
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                             <ProgressBar Width="140" Height="4" IsIndeterminate="True"
-                                         Foreground="{StaticResource AccentBrush}" Background="Transparent"
+                                         Foreground="{DynamicResource AccentBrush}" Background="Transparent"
                                          BorderThickness="0" Margin="0,0,10,0"
                                          Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisibility}}" />
                             <TextBlock Text="{Binding SelectionSummary}" VerticalAlignment="Center"
-                                       FontWeight="SemiBold" Foreground="{StaticResource AccentBrush}" />
+                                       FontWeight="SemiBold" Foreground="{DynamicResource AccentBrush}" />
                             <TextBlock Text="{Binding StatusText}" Style="{StaticResource MutedText}"
                                        Margin="12,0,0,0" VerticalAlignment="Center" />
                         </StackPanel>
@@ -472,8 +476,8 @@
                         <TextBlock Text="{Binding StatusText}" Style="{StaticResource MutedText}" VerticalAlignment="Center" />
                     </DockPanel>
 
-                    <Border Background="{StaticResource PanelBrush}" CornerRadius="8"
-                            BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
+                    <Border Background="{DynamicResource PanelBrush}" CornerRadius="8"
+                            BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
                         <ListBox ItemsSource="{Binding Entries}" SelectedItem="{Binding Selected}"
                                  Background="Transparent" BorderThickness="0"
                                  HorizontalContentAlignment="Stretch"
@@ -489,7 +493,7 @@
                                             <ControlTemplate TargetType="ListBoxItem">
                                                 <Grid Margin="4">
                                                     <Border x:Name="Bg" CornerRadius="6" Background="Transparent"
-                                                            BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,1" />
+                                                            BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1" />
                                                     <Border x:Name="Accent" Width="3" HorizontalAlignment="Left"
                                                             CornerRadius="2" Background="Transparent" Margin="0,2" />
                                                     <ContentPresenter Margin="12,10" />
@@ -501,7 +505,7 @@
                                                     <Trigger Property="IsSelected" Value="True">
                                                         <Setter TargetName="Bg" Property="Background" Value="#1e3a5f" />
                                                         <Setter TargetName="Accent" Property="Background"
-                                                                Value="{StaticResource AccentBrush}" />
+                                                                Value="{DynamicResource AccentBrush}" />
                                                     </Trigger>
                                                 </ControlTemplate.Triggers>
                                             </ControlTemplate>
@@ -519,10 +523,10 @@
                                                 <TextBlock Text="{Binding StateText}" FontSize="11">
                                                     <TextBlock.Style>
                                                         <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
-                                                            <Setter Property="Foreground" Value="{StaticResource AccentBrush}" />
+                                                            <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
                                                             <Style.Triggers>
                                                                 <DataTrigger Binding="{Binding IsEnabled}" Value="False">
-                                                                    <Setter Property="Foreground" Value="{StaticResource MutedTextBrush}" />
+                                                                    <Setter Property="Foreground" Value="{DynamicResource MutedTextBrush}" />
                                                                 </DataTrigger>
                                                             </Style.Triggers>
                                                         </Style>
@@ -533,13 +537,13 @@
                                             <Border CornerRadius="4" Padding="6,1" Margin="6,0,0,0" Background="#3a1e1e"
                                                     Visibility="{Binding IsCritical, Converter={StaticResource BoolToVisibility}}">
                                                 <TextBlock Text="системное" FontSize="11"
-                                                           Foreground="{StaticResource RiskAdvancedBrush}" />
+                                                           Foreground="{DynamicResource RiskAdvancedBrush}" />
                                             </Border>
 
                                             <Border CornerRadius="4" Padding="6,1" Margin="6,0,0,0" Background="#3a3320"
                                                     Visibility="{Binding IsBroken, Converter={StaticResource BoolToVisibility}}">
                                                 <TextBlock Text="файл не найден" FontSize="11"
-                                                           Foreground="{StaticResource RiskCautionBrush}" />
+                                                           Foreground="{DynamicResource RiskCautionBrush}" />
                                             </Border>
                                         </StackPanel>
 
@@ -582,8 +586,8 @@
                     <TextBlock DockPanel.Dock="Bottom" Text="{Binding StatusText}"
                                Style="{StaticResource MutedText}" Margin="0,8,0,0" />
 
-                    <Border Background="{StaticResource PanelBrush}" CornerRadius="8"
-                            BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
+                    <Border Background="{DynamicResource PanelBrush}" CornerRadius="8"
+                            BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
                         <ListBox ItemsSource="{Binding Processes}" SelectedItem="{Binding Selected}"
                                  Background="Transparent" BorderThickness="0"
                                  HorizontalContentAlignment="Stretch"
@@ -599,7 +603,7 @@
                                             <ControlTemplate TargetType="ListBoxItem">
                                                 <Grid Margin="4">
                                                     <Border x:Name="Bg" CornerRadius="6" Background="Transparent"
-                                                            BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,1" />
+                                                            BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1" />
                                                     <Border x:Name="Accent" Width="3" HorizontalAlignment="Left"
                                                             CornerRadius="2" Background="Transparent" Margin="0,2" />
                                                     <ContentPresenter Margin="12,8" />
@@ -611,7 +615,7 @@
                                                     <Trigger Property="IsSelected" Value="True">
                                                         <Setter TargetName="Bg" Property="Background" Value="#1e3a5f" />
                                                         <Setter TargetName="Accent" Property="Background"
-                                                                Value="{StaticResource AccentBrush}" />
+                                                                Value="{DynamicResource AccentBrush}" />
                                                     </Trigger>
                                                 </ControlTemplate.Triggers>
                                             </ControlTemplate>
@@ -644,13 +648,13 @@
                                                 <Border CornerRadius="4" Padding="6,1" Margin="6,0,0,0" Background="#3a1e1e"
                                                         Visibility="{Binding IsCritical, Converter={StaticResource BoolToVisibility}}">
                                                     <TextBlock Text="системный" FontSize="11"
-                                                               Foreground="{StaticResource RiskAdvancedBrush}" />
+                                                               Foreground="{DynamicResource RiskAdvancedBrush}" />
                                                 </Border>
 
                                                 <Border CornerRadius="4" Padding="6,1" Margin="6,0,0,0" Background="#3a3320"
                                                         Visibility="{Binding IsHung, Converter={StaticResource BoolToVisibility}}">
                                                     <TextBlock Text="не отвечает" FontSize="11"
-                                                               Foreground="{StaticResource RiskCautionBrush}" />
+                                                               Foreground="{DynamicResource RiskCautionBrush}" />
                                                 </Border>
                                             </StackPanel>
                                             <TextBlock Text="{Binding Path}" Style="{StaticResource MutedText}"
@@ -703,8 +707,8 @@
                     <TextBlock DockPanel.Dock="Bottom" Text="{Binding StatusText}"
                                Style="{StaticResource MutedText}" Margin="0,8,0,0" TextWrapping="Wrap" />
 
-                    <Border Background="{StaticResource PanelBrush}" CornerRadius="8"
-                            BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
+                    <Border Background="{DynamicResource PanelBrush}" CornerRadius="8"
+                            BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
                         <ListBox ItemsSource="{Binding Entries}" SelectedItem="{Binding Selected}"
                                  Background="Transparent" BorderThickness="0"
                                  HorizontalContentAlignment="Stretch"
@@ -720,7 +724,7 @@
                                             <ControlTemplate TargetType="ListBoxItem">
                                                 <Grid Margin="4">
                                                     <Border x:Name="Bg" CornerRadius="6" Background="Transparent"
-                                                            BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,1" />
+                                                            BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1" />
                                                     <Border x:Name="Accent" Width="3" HorizontalAlignment="Left"
                                                             CornerRadius="2" Background="Transparent" Margin="0,2" />
                                                     <ContentPresenter Margin="12,8" />
@@ -732,7 +736,7 @@
                                                     <Trigger Property="IsSelected" Value="True">
                                                         <Setter TargetName="Bg" Property="Background" Value="#1e3a5f" />
                                                         <Setter TargetName="Accent" Property="Background"
-                                                                Value="{StaticResource AccentBrush}" />
+                                                                Value="{DynamicResource AccentBrush}" />
                                                     </Trigger>
                                                 </ControlTemplate.Triggers>
                                             </ControlTemplate>
@@ -761,13 +765,13 @@
                                                 <Border CornerRadius="4" Padding="6,1" Margin="8,0,0,0" Background="#3a1e1e"
                                                         Visibility="{Binding IsCritical, Converter={StaticResource BoolToVisibility}}">
                                                     <TextBlock Text="критичная" FontSize="11"
-                                                               Foreground="{StaticResource RiskAdvancedBrush}" />
+                                                               Foreground="{DynamicResource RiskAdvancedBrush}" />
                                                 </Border>
 
                                                 <Border CornerRadius="4" Padding="6,1" Margin="8,0,0,0" Background="#1e3a28"
                                                         Visibility="{Binding IsSafeToDisable, Converter={StaticResource BoolToVisibility}}">
                                                     <TextBlock Text="можно отключить" FontSize="11"
-                                                               Foreground="{StaticResource RiskSafeBrush}" />
+                                                               Foreground="{DynamicResource RiskSafeBrush}" />
                                                 </Border>
                                             </StackPanel>
 
@@ -784,10 +788,10 @@
                                                    HorizontalAlignment="Right" FontSize="12">
                                             <TextBlock.Style>
                                                 <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
-                                                    <Setter Property="Foreground" Value="{StaticResource AccentBrush}" />
+                                                    <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
                                                     <Style.Triggers>
                                                         <DataTrigger Binding="{Binding IsRunning}" Value="False">
-                                                            <Setter Property="Foreground" Value="{StaticResource MutedTextBrush}" />
+                                                            <Setter Property="Foreground" Value="{DynamicResource MutedTextBrush}" />
                                                         </DataTrigger>
                                                     </Style.Triggers>
                                                 </Style>
@@ -823,8 +827,8 @@
                     <TextBlock DockPanel.Dock="Bottom" Text="{Binding StatusText}"
                                Style="{StaticResource MutedText}" Margin="0,8,0,0" TextWrapping="Wrap" />
 
-                    <Border Background="{StaticResource PanelBrush}" CornerRadius="8"
-                            BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
+                    <Border Background="{DynamicResource PanelBrush}" CornerRadius="8"
+                            BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
                         <ListBox ItemsSource="{Binding Entries}" SelectedItem="{Binding Selected}"
                                  Background="Transparent" BorderThickness="0"
                                  HorizontalContentAlignment="Stretch"
@@ -840,7 +844,7 @@
                                             <ControlTemplate TargetType="ListBoxItem">
                                                 <Grid Margin="4">
                                                     <Border x:Name="Bg" CornerRadius="6" Background="Transparent"
-                                                            BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,1" />
+                                                            BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1" />
                                                     <Border x:Name="Accent" Width="3" HorizontalAlignment="Left"
                                                             CornerRadius="2" Background="Transparent" Margin="0,2" />
                                                     <ContentPresenter Margin="12,8" />
@@ -852,7 +856,7 @@
                                                     <Trigger Property="IsSelected" Value="True">
                                                         <Setter TargetName="Bg" Property="Background" Value="#1e3a5f" />
                                                         <Setter TargetName="Accent" Property="Background"
-                                                                Value="{StaticResource AccentBrush}" />
+                                                                Value="{DynamicResource AccentBrush}" />
                                                     </Trigger>
                                                 </ControlTemplate.Triggers>
                                             </ControlTemplate>
@@ -877,7 +881,7 @@
                                                 <Border CornerRadius="4" Padding="6,1" Margin="8,0,0,0" Background="#3a3320"
                                                         Visibility="{Binding HasNoUninstaller, Converter={StaticResource BoolToVisibility}}">
                                                     <TextBlock Text="нет деинсталлятора" FontSize="11"
-                                                               Foreground="{StaticResource RiskCautionBrush}" />
+                                                               Foreground="{DynamicResource RiskCautionBrush}" />
                                                 </Border>
 
                                                 <Border CornerRadius="4" Padding="6,1" Margin="8,0,0,0" Background="#1e2a3a"
@@ -913,8 +917,8 @@
                         <ItemsControl ItemsSource="{Binding Tools}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <Border Background="{StaticResource PanelBrush}" CornerRadius="8"
-                                            BorderBrush="{StaticResource BorderBrush}" BorderThickness="1"
+                                    <Border Background="{DynamicResource PanelBrush}" CornerRadius="8"
+                                            BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
                                             Padding="12,10" Margin="0,0,0,8">
                                         <DockPanel>
                                             <Button DockPanel.Dock="Right" Content="{Binding ActionText}"
@@ -923,7 +927,7 @@
                                                 <StackPanel Orientation="Horizontal">
                                                     <TextBlock Text="{Binding Name}" FontWeight="SemiBold" FontSize="14" />
                                                     <TextBlock Text="установлено" FontSize="11" Margin="10,2,0,0"
-                                                               Foreground="{StaticResource AccentBrush}"
+                                                               Foreground="{DynamicResource AccentBrush}"
                                                                Visibility="{Binding IsInstalled, Converter={StaticResource BoolToVisibility}}" />
                                                 </StackPanel>
                                                 <TextBlock Text="{Binding Description}" Style="{StaticResource MutedText}" Margin="0,4,0,0" TextWrapping="Wrap" />
@@ -938,8 +942,8 @@
                         <ItemsControl ItemsSource="{Binding Advisories}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <Border Background="{StaticResource PanelBrush}" CornerRadius="8"
-                                            BorderBrush="{StaticResource BorderBrush}" BorderThickness="1"
+                                    <Border Background="{DynamicResource PanelBrush}" CornerRadius="8"
+                                            BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
                                             Padding="12,10" Margin="0,0,0,8">
                                         <StackPanel>
                                             <TextBlock Text="{Binding Title}" FontWeight="SemiBold" FontSize="14" />
@@ -954,13 +958,13 @@
                         <ItemsControl ItemsSource="{Binding Myths}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <Border Background="{StaticResource PanelBrush}" CornerRadius="8"
-                                            BorderBrush="{StaticResource BorderBrush}" BorderThickness="1"
+                                    <Border Background="{DynamicResource PanelBrush}" CornerRadius="8"
+                                            BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
                                             Padding="12,10" Margin="0,0,0,8">
                                         <StackPanel>
                                             <TextBlock Text="{Binding Title}" FontWeight="SemiBold" FontSize="14" />
                                             <TextBlock Text="{Binding Reason}" Style="{StaticResource MutedText}" Margin="0,4,0,0"
-                                                       Foreground="{StaticResource RiskCautionBrush}" TextWrapping="Wrap" />
+                                                       Foreground="{DynamicResource RiskCautionBrush}" TextWrapping="Wrap" />
                                         </StackPanel>
                                     </Border>
                                 </DataTemplate>

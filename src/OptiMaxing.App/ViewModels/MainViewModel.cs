@@ -4,6 +4,7 @@ using System.Windows;
 using OptiMaxing.Core.Engine;
 using OptiMaxing.Core.Model;
 using OptiMaxing.Core.Optimizations;
+using OptiMaxing.Core.Programs;
 using OptiMaxing.Core.Safety;
 using OptiMaxing.Core.Services;
 using OptiMaxing.Core.Startup;
@@ -35,6 +36,7 @@ public sealed class MainViewModel : ObservableObject
     public StartupViewModel Startup { get; }
     public ProcessesViewModel Processes { get; }
     public ServicesViewModel Services { get; }
+    public ProgramsViewModel Programs { get; }
 
     public MainViewModel(
         OptimizationCatalog catalog,
@@ -44,8 +46,10 @@ public sealed class MainViewModel : ObservableObject
         SensorMonitor sensors,
         StartupInventoryService startup,
         ProcessMonitor processes,
-        ServiceInventoryService services)
+        ServiceInventoryService services,
+        InstalledProgramsService programs)
     {
+        Programs = new ProgramsViewModel(programs);
         Startup = new StartupViewModel(startup);
         Processes = new ProcessesViewModel(processes);
         Services = new ServicesViewModel(services);

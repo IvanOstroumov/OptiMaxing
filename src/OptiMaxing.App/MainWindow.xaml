@@ -716,6 +716,105 @@
                 </DockPanel>
             </TabItem>
 
+            <TabItem Header="Программы" DataContext="{Binding Programs}">
+                <DockPanel Margin="0,12,0,0">
+                    <DockPanel DockPanel.Dock="Top" Margin="0,0,0,10">
+                        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                            <Button Content="Обновить" Command="{Binding RefreshCommand}" />
+                            <Button Content="Удалить" Command="{Binding UninstallCommand}" Margin="8,0,0,0" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBox Text="{Binding Filter, UpdateSourceTrigger=PropertyChanged}"
+                                     Width="200" VerticalAlignment="Center" />
+                            <CheckBox Content="Показывать системные компоненты"
+                                      IsChecked="{Binding ShowSystemComponents}"
+                                      VerticalAlignment="Center" Margin="12,0,0,0" />
+                        </StackPanel>
+                    </DockPanel>
+
+                    <TextBlock DockPanel.Dock="Bottom" Text="{Binding StatusText}"
+                               Style="{StaticResource MutedText}" Margin="0,8,0,0" TextWrapping="Wrap" />
+
+                    <Border Background="{StaticResource PanelBrush}" CornerRadius="8"
+                            BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
+                        <ListBox ItemsSource="{Binding Entries}" SelectedItem="{Binding Selected}"
+                                 Background="Transparent" BorderThickness="0"
+                                 HorizontalContentAlignment="Stretch"
+                                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                 VirtualizingPanel.IsVirtualizing="True"
+                                 VirtualizingPanel.VirtualizationMode="Recycling"
+                                 VirtualizingPanel.ScrollUnit="Pixel">
+                            <ListBox.ItemContainerStyle>
+                                <Style TargetType="ListBoxItem">
+                                    <Setter Property="Padding" Value="0" />
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="ListBoxItem">
+                                                <Grid Margin="4">
+                                                    <Border x:Name="Bg" CornerRadius="6" Background="Transparent"
+                                                            BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,1" />
+                                                    <Border x:Name="Accent" Width="3" HorizontalAlignment="Left"
+                                                            CornerRadius="2" Background="Transparent" Margin="0,2" />
+                                                    <ContentPresenter Margin="12,8" />
+                                                </Grid>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter TargetName="Bg" Property="Background" Value="#1a2433" />
+                                                    </Trigger>
+                                                    <Trigger Property="IsSelected" Value="True">
+                                                        <Setter TargetName="Bg" Property="Background" Value="#1e3a5f" />
+                                                        <Setter TargetName="Accent" Property="Background"
+                                                                Value="{StaticResource AccentBrush}" />
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </ListBox.ItemContainerStyle>
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="100" />
+                                            <ColumnDefinition Width="100" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <StackPanel Grid.Column="0">
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="{Binding Name}" FontWeight="SemiBold" FontSize="14"
+                                                           TextTrimming="CharacterEllipsis" />
+
+                                                <Border CornerRadius="4" Padding="6,1" Margin="8,0,0,0" Background="#3a3320"
+                                                        Visibility="{Binding HasNoUninstaller, Converter={StaticResource BoolToVisibility}}">
+                                                    <TextBlock Text="нет деинсталлятора" FontSize="11"
+                                                               Foreground="{StaticResource RiskCautionBrush}" />
+                                                </Border>
+
+                                                <Border CornerRadius="4" Padding="6,1" Margin="8,0,0,0" Background="#1e2a3a"
+                                                        Visibility="{Binding IsSystemComponent, Converter={StaticResource BoolToVisibility}}">
+                                                    <TextBlock Text="системный компонент" FontSize="11"
+                                                               Style="{StaticResource MutedText}" />
+                                                </Border>
+                                            </StackPanel>
+
+                                            <TextBlock Text="{Binding Details}" Style="{StaticResource MutedText}"
+                                                       Margin="0,3,0,0" TextTrimming="CharacterEllipsis" />
+                                        </StackPanel>
+
+                                        <TextBlock Grid.Column="1" Text="{Binding SizeText}" VerticalAlignment="Center"
+                                                   HorizontalAlignment="Right" FontFamily="Consolas" />
+                                        <TextBlock Grid.Column="2" Text="{Binding InstallDateText}" VerticalAlignment="Center"
+                                                   HorizontalAlignment="Right" Style="{StaticResource MutedText}" />
+                                    </Grid>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </Border>
+                </DockPanel>
+            </TabItem>
+
             <TabItem Header="Инструменты и советы" DataContext="{Binding Advisory}">
                 <ScrollViewer Margin="0,12,0,0" VerticalScrollBarVisibility="Auto">
                     <StackPanel>

@@ -37,7 +37,20 @@ public sealed class InMemoryRegistryProvider : IRegistryProvider
     public bool KeyExists(RegistryHive hive, string subKey) =>
         _values.Keys.Any(k => k.StartsWith($"{hive}\\{subKey}\\", StringComparison.OrdinalIgnoreCase));
 
-    public IReadOnlyList<string> GetSubKeyNames(RegistryHive hive, string subKey) => [];
+    /// <summary>Keys are only implied by the values stored under them, so a subkey is any path
+    /// segment that still has a further segment (the value name) after it.</summary>
+    public IReadOnlyList<string> GetSubKeyNames(RegistryHive hive, string subKey)
+    {
+        var prefix = $"{hive}\\{subKey}\\";
+
+        return _values.Keys
+            .Where(k => k.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+            .Select(k => k[prefix.Length..].Split('\\'))
+            .Where(segments => segments.Length > 1)
+            .Select(segments => segments[0])
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToList();
+    }
 
     public IReadOnlyList<string> GetValueNames(RegistryHive hive, string subKey) =>
         _values.Keys

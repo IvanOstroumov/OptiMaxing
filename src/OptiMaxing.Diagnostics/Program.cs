@@ -1,6 +1,7 @@
 using System.Text;
 using OptiMaxing.Core.Abstractions;
 using OptiMaxing.Core.Platform;
+using OptiMaxing.Core.Programs;
 using OptiMaxing.Core.Safety;
 using OptiMaxing.Core.Services;
 using OptiMaxing.Core.Startup;
@@ -25,6 +26,24 @@ internal static class Program
         DumpStartup(new StartupInventoryService(new WindowsRegistryProvider(), new RealFileSystem()));
         DumpProcesses(new ProcessMonitor(new WindowsProcessInspector()));
         DumpServices(new ServiceInventoryService(new WindowsServiceManager()));
+        DumpPrograms(new InstalledProgramsService(new WindowsRegistryProvider(), new ProcessRunner()));
+    }
+
+    private static void DumpPrograms(InstalledProgramsService programs)
+    {
+        Section("Установленные программы (топ-15 по размеру)");
+
+        var all = programs.List();
+        Console.WriteLine($"Всего: {all.Count}, " +
+                          $"с деинсталлятором: {all.Count(p => p.CanUninstall)}, " +
+                          $"системных компонентов: {all.Count(p => p.IsSystemComponent)}");
+
+        foreach (var program in all.OrderByDescending(p => p.EstimatedSizeBytes ?? 0).Take(15))
+        {
+            var date = program.InstallDate?.ToString("yyyy-MM-dd") ?? "    —     ";
+            Console.WriteLine($"  {program.SizeText,10}  {date}  {program.Name}" +
+                              (program.CanUninstall ? string.Empty : "  [без деинсталлятора]"));
+        }
     }
 
     private static void DumpServices(ServiceInventoryService services)
